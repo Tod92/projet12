@@ -29,6 +29,8 @@ with session_scope() as s:
 with session_scope() as s:
     omer = s.query(Parent).filter_by(firstName='Omer').first()
     print(omer)
+    enfant.parent_id = omer.id
+    s.add(enfant)
 
 
 
