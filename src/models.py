@@ -42,9 +42,13 @@ Base = declarative_base()
 
 
 
-class User:
+class User(Base):
     """ commercial / support / gestion """
-    pass
+    __tablename__ = 'user'
+    id = Column(Integer, primary_key=True)
+    firstName = Column(String(50), nullable=False)
+    lastName = Column(String(50), nullable=False)
+    email = Column(String(50), nullable=False)
 
 class Role:
     pass
