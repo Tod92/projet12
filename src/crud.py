@@ -33,6 +33,8 @@ def session_scope():
 
 # Suppression des tables
 # Base.metadata.drop_all(engine)
+
+
 def delete_database():
     Base.metadata.drop_all(engine)
 

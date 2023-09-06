@@ -67,6 +67,10 @@ class Client(Base):
 
     contracts = relationship('Contract', back_populates='client')
 
+    @property
+    def fullName(self):
+        return self.firstName + ' ' + self.lastName
+
 
 class Event(Base):
     """
@@ -76,6 +80,7 @@ class Event(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(100), nullable=False)
     
+    location_id = Column(Integer, ForeignKey('location.id'))
     
 
 
@@ -86,8 +91,11 @@ class Contract(Base):
     __tablename__ = "contract"
     id = Column(Integer, primary_key=True)
     name = Column(String(100), nullable=False)
- 
+    
+    client_id = Column(Integer, ForeignKey('client.id'))
+    client = relationship('Client', back_populates='contracts')
 
+    
 class Company(Base):
     """
     Table company related to Client (one-to-many) and Location (one-to-one)
@@ -108,6 +116,8 @@ class Location(Base):
     __tablename__ = 'location'
     id = Column(Integer, primary_key=True)
     address = Column(String(150), nullable=False)
+
+        
 
 
 

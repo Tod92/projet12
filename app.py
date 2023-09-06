@@ -1,6 +1,6 @@
 import click
 from src.crud import delete_database, recreate_database
-
+from src.controller import add_location
 
 __appname = "EPIC EVENTS"
 
@@ -22,6 +22,11 @@ def dropdb():
 @cli.command()
 def startapp():
     click.echo(f'Welcome to {__appname}')
+
+@cli.command()
+def addlocation():
+    add_location()
+
 
 if __name__ == '__main__':
     cli()
