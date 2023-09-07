@@ -50,7 +50,10 @@ class User(Base):
     email = Column(String(50), nullable=False, unique=True)
     password = Column(String(200), nullable=False)
     # role_id = Column(Integer, ForeignKey('user_role.id'))
-
+    
+    def __repr__(self):
+        return "<User(firstName='{}', LastName='{}')>"\
+                .format(self.firstName, self.lastName)
 
 class Role(Base):
     """ commercial / support / gestion """
