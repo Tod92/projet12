@@ -7,50 +7,22 @@ from sqlalchemy import (
     DateTime,
     Float,
 )
-from sqlalchemy.orm import relationship, declarative_base
+from sqlalchemy.orm import relationship, declarative_base, Mapped, mapped_column
 from datetime import date, datetime
 
 
 Base = declarative_base()
 
-# class Parent(Base):
-#     """
-#     for tests
-#     """
-#     __tablename__ = 'parent'
-#     id = Column(Integer, primary_key=True)
-#     firstName = Column(String(50), nullable=False)
-#     lastName = Column(String(50), nullable=False)
-    
-#     def __repr__(self):
-#         return "<Parent(firstName='{}', LastName='{}')>"\
-#                 .format(self.firstName, self.lastName)
-
-
-# class Enfant(Base):
-#     """test"""
-#     __tablename__ = 'enfant'
-#     id = Column(Integer, primary_key=True)
-#     firstName = Column(String(50), nullable=False)
-#     lastName = Column(String(50), nullable=False)
-    
-#     parent_id = Column(Integer, ForeignKey('parent.id'), nullable=False)
-
-#     def __repr__(self):
-#         return "<Enfant(firstName='{}', LastName='{}')>"\
-#                 .format(self.firstName, self.lastName)
-
-
 
 class User(Base):
     __tablename__ = 'user'
-    id = Column(Integer, primary_key=True)
-    firstName = Column(String(50), nullable=False)
-    lastName = Column(String(50), nullable=False)
-    email = Column(String(50), nullable=False, unique=True)
-    password = Column(String(200), nullable=False)
-    role_id = Column(Integer, ForeignKey('role.id'))
-    
+    id = mapped_column(Integer, primary_key=True)
+    firstName = mapped_column(String(50), nullable=False)
+    lastName = mapped_column(String(50), nullable=False)
+    email = mapped_column(String(50), nullable=False, unique=True)
+    password = mapped_column(String(200), nullable=False)
+    role_id = mapped_column(Integer, ForeignKey('role.id'))
+    role = relationship('Role',back_populates='users')
     def __repr__(self):
         return "<User(firstName='{}', LastName='{}')>"\
                 .format(self.firstName, self.lastName)
@@ -58,24 +30,24 @@ class User(Base):
 class Role(Base):
     """ commercial / support / gestion """
     __tablename__ = 'role'
-    id = Column(Integer, primary_key=True)
-    name = Column(String(50), nullable=False, unique=True)
-
+    id = mapped_column(Integer, primary_key=True)
+    name = mapped_column(String(50), nullable=False, unique=True)
+    users = relationship('User', back_populates='role')
     
 class Client(Base):
     """
     Table client related to Company (many-to-one) and Contract (one-to-many)
     """
     __tablename__ = 'client'
-    id = Column(Integer, primary_key=True)
-    firstName = Column(String(50), nullable=False)
-    lastName = Column(String(50), nullable=False)
-    email = Column(String(50), nullable=False)
-    phone = Column(String(50), nullable=False)
-    creationDate = Column(Date(), nullable=False, default=date.today())
-    lastUpdateDate = Column(Date(), nullable=False, default=date.today())
+    id = mapped_column(Integer, primary_key=True)
+    firstName = mapped_column(String(50), nullable=False)
+    lastName = mapped_column(String(50), nullable=False)
+    email = mapped_column(String(50), nullable=False)
+    phone = mapped_column(String(50), nullable=False)
+    creationDate = mapped_column(Date(), nullable=False, default=date.today())
+    lastUpdateDate = mapped_column(Date(), nullable=False, default=date.today())
 
-    company_id = Column(Integer, ForeignKey('company.id'))
+    company_id = mapped_column(Integer, ForeignKey('company.id'))
     company = relationship('Company', back_populates='clients')
 
     contracts = relationship('Contract', back_populates='client')
@@ -90,10 +62,10 @@ class Event(Base):
     Table event related to Location (many-to-one) and Contract (one-to-one)
     """
     __tablename__ = 'event'
-    id = Column(Integer, primary_key=True)
-    name = Column(String(100), nullable=False)
+    id = mapped_column(Integer, primary_key=True)
+    name = mapped_column(String(100), nullable=False)
     
-    location_id = Column(Integer, ForeignKey('location.id'))
+    location_id = mapped_column(Integer, ForeignKey('location.id'))
     
 
 
@@ -102,24 +74,37 @@ class Contract(Base):
     Table contract related to Client (many-to-one) and Event (one-to-one)
     """
     __tablename__ = "contract"
-    id = Column(Integer, primary_key=True)
-    name = Column(String(100), nullable=False)
-    
-    client_id = Column(Integer, ForeignKey('client.id'))
+    id = mapped_column(Integer, primary_key=True)
+    description = mapped_column(String(500), nullable=False)
+    totalAmount = mapped_column(Integer)
+    remainingAmount = mapped_column(Integer)
+    creationDate = mapped_column(Date(), nullable=False, default=date.today())
+    status_id = mapped_column(Integer, ForeignKey('status.id'), default=1)
+    status = relationship('Status', back_populates='contracts')
+    commercialContact_id = mapped_column(Integer, ForeignKey('user.id'), nullable=True)
+    client_id = mapped_column(Integer, ForeignKey('client.id'))
     client = relationship('Client', back_populates='contracts')
 
-    
+class Status(Base):
+    """
+    Table for contract's status related to CContract (many-to-one)
+    """    
+    __tablename__ = "status"
+    id = mapped_column(Integer, primary_key=True)
+    name = mapped_column(String(20), nullable=False)
+    contracts = relationship('Contract', back_populates='status')
+
 class Company(Base):
     """
     Table company related to Client (one-to-many) and Location (one-to-one)
     """
     __tablename__ = 'company'
-    id = Column(Integer, primary_key=True)
-    name = Column(String(100), nullable=False)
+    id = mapped_column(Integer, primary_key=True)
+    name = mapped_column(String(100), nullable=False)
 
     clients = relationship('Client', back_populates='company')
 
-    location_id = Column(Integer, ForeignKey('location.id'))
+    location_id = mapped_column(Integer, ForeignKey('location.id'))
 
 
 class Location(Base):
@@ -127,8 +112,8 @@ class Location(Base):
     Table location related to Company (one-to-one) and/or Event (one-to-many)
     """
     __tablename__ = 'location'
-    id = Column(Integer, primary_key=True)
-    address = Column(String(150), nullable=False)
+    id = mapped_column(Integer, primary_key=True)
+    address = mapped_column(String(150), nullable=False)
 
         
 

@@ -5,9 +5,17 @@ import sys
 sys.path.append("..") # Adds higher directory to python modules path.
 
 from src.crud import session_scope
-from src.models import Location, User, Role, Company
+from src.models import Location, User, Role, Company, Client, Status, Contract
 from src.views import LocationView, AuthView
-from src.populator import USER_POPULATION, ROLE_POPULATION, LOCATION_POPULATION, COMPANY_POPULATION
+from src.populator import (
+    USER_POPULATION,
+    ROLE_POPULATION,
+    LOCATION_POPULATION,
+    COMPANY_POPULATION,
+    CLIENT_POPULATION,
+    STATUS_POPULATION,
+    CONTRACT_POPULATION
+)
 
 from sqlalchemy import select
 
@@ -77,5 +85,36 @@ def populate_database():
             company.id = c['id']
             company.name = c['name']
             company.location_id = c['location_id']
-            print("company.location_id : ", company.location_id)
             s.add(company)
+    with session_scope() as s:
+        # Client:
+        for c in CLIENT_POPULATION:
+            client = Client()
+            client.id = c['id']
+            client.firstName = c['firstName']
+            client.lastName = c['lastName']
+            client.email = c['email']
+            client.phone = c['phone']         
+            client.company_id = c['company_id']
+            s.add(client)
+    with session_scope() as s:
+        # Status:
+        for stat in STATUS_POPULATION:
+            status = Status()
+            status.id = stat['id']
+            status.name = stat['name']
+            s.add(status)
+    with session_scope() as s:
+        # Contract:
+        for c in CONTRACT_POPULATION:
+            contract = Contract()
+            contract.id = c['id']
+            contract.description = c['description']
+            contract.totalAmount = c['totalAmount']
+            contract.remainingAmount = c['remainingAmount']
+            contract.client_id = c['client_id']
+
+            s.add(contract)
+
+
+            

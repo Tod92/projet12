@@ -63,6 +63,57 @@ COMPANY_POPULATION = [
 
 CLIENT_POPULATION = [
     {
+        "id":1,
+        "firstName":"Pika",
+        "lastName":"Chu",
+        "email":"pika.chu@gmail.com",
+        "phone":"0100000000",
+        "company_id":1
+    },
+    {
+        "id":2,
+        "firstName":"Bulbi",
+        "lastName":"Zare",
+        "email":"bulbi.zare@gmail.com",
+        "phone":"01111111",
+        "company_id":1
+    },
+    {
+        "id":3,
+        "firstName":"Iron",
+        "lastName":"Man",
+        "email":"iron.man@gmail.com",
+        "phone":"0123456789",
+        "company_id":2
+    },
+]
+
+STATUS_POPULATION = [
+    {
+        "id":1,
+        "name":"En cours"
+    },
+    {
+        "id":2,
+        "name":"Terminé"
+    }
+]
+
+CONTRACT_POPULATION = [
+    {
+        "id":1,
+        "description":"Contract de maintenance éléctrique avec le client PIKA CHU (POKEMON INC)",
+        "totalAmount":1560,
+        "remainingAmount":1560,
+        "client_id":1
+
+    },
+    {
+        "id":2,
+        "description":"Contract bancaire avec Tony Stark",
+        "totalAmount":999999,
+        "remainingAmount":999999,
+        "client_id":3
 
     }
 ]
