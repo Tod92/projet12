@@ -43,16 +43,22 @@ Base = declarative_base()
 
 
 class User(Base):
-    """ commercial / support / gestion """
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
     firstName = Column(String(50), nullable=False)
     lastName = Column(String(50), nullable=False)
-    email = Column(String(50), nullable=False)
+    email = Column(String(50), nullable=False, unique=True)
+    password = Column(String(200), nullable=False)
+    # role_id = Column(Integer, ForeignKey('user_role.id'))
 
-class Role:
-    pass
 
+class Role(Base):
+    """ commercial / support / gestion """
+    __tablename__ = 'role'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50), nullable=False, unique=True)
+
+    
 class Client(Base):
     """
     Table client related to Company (many-to-one) and Contract (one-to-many)

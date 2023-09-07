@@ -1,13 +1,23 @@
 import click
 from src.crud import delete_database, recreate_database
-from src.controller import add_location
+from src.controller import add_location, populate_database
 
 __appname = "EPIC EVENTS"
 
 
 @click.group
 def cli():
+    click.echo(f'Welcome to {__appname}')
     pass
+
+@cli.command()
+def login():
+    pass
+
+@cli.command()
+def populatedb():
+    populate_database()
+    click.echo('Populated the database')
 
 @cli.command()
 def initdb():
@@ -19,9 +29,7 @@ def dropdb():
     delete_database()
     click.echo('Dropped the database')
 
-@cli.command()
-def startapp():
-    click.echo(f'Welcome to {__appname}')
+ 
 
 @cli.command()
 def addlocation():
