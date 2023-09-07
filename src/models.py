@@ -49,7 +49,7 @@ class User(Base):
     lastName = Column(String(50), nullable=False)
     email = Column(String(50), nullable=False, unique=True)
     password = Column(String(200), nullable=False)
-    # role_id = Column(Integer, ForeignKey('user_role.id'))
+    role_id = Column(Integer, ForeignKey('role.id'))
     
     def __repr__(self):
         return "<User(firstName='{}', LastName='{}')>"\

@@ -21,8 +21,11 @@ class AuthView(View):
         
     def not_found(self):
         click.echo("USERNAME NOT FOUND !!")
+ 
+    def bad_password(self):
+        click.echo("INCORRECT PASSWORD !!")
 
-        
+
 class LocationView(View):
     """"""
 
