@@ -3,12 +3,11 @@ from argon2.exceptions import VerifyMismatchError
 
 import sys
 sys.path.append("..") # Adds higher directory to python modules path.
-from config import USER_POPULATION, ROLE_POPULATION, LOCATION_POPULATION
-
 
 from src.crud import session_scope
-from src.models import Location, User, Role
+from src.models import Location, User, Role, Company
 from src.views import LocationView, AuthView
+from src.populator import USER_POPULATION, ROLE_POPULATION, LOCATION_POPULATION, COMPANY_POPULATION
 
 from sqlalchemy import select
 
@@ -62,10 +61,21 @@ def populate_database():
             user.firstName = u['firstName']
             user.lastName = u['lastName']
             user.email = u['email']
+            user.id = u['id']
             user.role_id = u['role_id']
             s.add(user)
         # Location
         for l in LOCATION_POPULATION:
             location = Location()
             location.address = l['address']
+            location.id = l['id']
             s.add(location)
+    with session_scope() as s:
+        # Company:
+        for c in COMPANY_POPULATION:
+            company = Company()
+            company.id = c['id']
+            company.name = c['name']
+            company.location_id = c['location_id']
+            print("company.location_id : ", company.location_id)
+            s.add(company)
