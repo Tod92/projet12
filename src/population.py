@@ -115,5 +115,34 @@ CONTRACT_POPULATION = [
         "remainingAmount":999999,
         "client_id":3
 
+    },
+    {
+        "id":3,
+        "description":"Contrat pour un stand Avengers à la Comic Con",
+        "totalAmount":12,
+        "remainingAmount":16,
+        "client_id":3
+
+    }
+]
+
+EVENT_POPULATION = [
+    {
+        "id":1,
+        "name":"Comic con",
+        "attendees":5000,
+        "notes":"cosplay à gogo !",
+        "contract_id":3,
+        "location_id":2
+
+    },
+    {
+        "id":2,
+        "name":"Combat de Pokemon type feu",
+        "attendees":200,
+        "notes":"Penser à amener un extincteur",
+        "contract_id":1,
+        "location_id":3
+
     }
 ]

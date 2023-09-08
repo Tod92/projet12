@@ -5,7 +5,7 @@ import sys
 sys.path.append("..") # Adds higher directory to python modules path.
 
 from src.crud import session_scope
-from src.models import Location, User, Role, Company, Client, Status, Contract
+from src.models import Location, User, Role, Company, Client, Status, Contract, Event
 from src.views import LocationView, AuthView
 from src.populator import (
     USER_POPULATION,
@@ -14,7 +14,8 @@ from src.populator import (
     COMPANY_POPULATION,
     CLIENT_POPULATION,
     STATUS_POPULATION,
-    CONTRACT_POPULATION
+    CONTRACT_POPULATION,
+    EVENT_POPULATION
 )
 
 from sqlalchemy import select
@@ -113,8 +114,15 @@ def populate_database():
             contract.totalAmount = c['totalAmount']
             contract.remainingAmount = c['remainingAmount']
             contract.client_id = c['client_id']
-
             s.add(contract)
-
-
-            
+    with session_scope() as s:
+        #Event:
+        for e in EVENT_POPULATION:
+            event = Event()
+            event.id = e['id']
+            event.name = e['name']
+            event.attendees = e['attendees']
+            event.notes = e['notes']
+            event.contract_id = e['contract_id']
+            event.location_id = e['location_id']
+            s.add(event)            

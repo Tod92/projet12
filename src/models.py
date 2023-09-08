@@ -26,14 +26,7 @@ class User(Base):
     def __repr__(self):
         return "<User(firstName='{}', LastName='{}')>"\
                 .format(self.firstName, self.lastName)
-
-class Role(Base):
-    """ commercial / support / gestion """
-    __tablename__ = 'role'
-    id = mapped_column(Integer, primary_key=True)
-    name = mapped_column(String(50), nullable=False, unique=True)
-    users = relationship('User', back_populates='role')
-    
+ 
 class Client(Base):
     """
     Table client related to Company (many-to-one) and Contract (one-to-many)
@@ -64,9 +57,16 @@ class Event(Base):
     __tablename__ = 'event'
     id = mapped_column(Integer, primary_key=True)
     name = mapped_column(String(100), nullable=False)
-    
+    startDate = mapped_column(Date(), nullable=False, default=date.today())
+    endDate = mapped_column(Date(), nullable=True)
+    attendees = mapped_column(Integer, nullable=False)
+    notes = mapped_column(String(500), nullable=True)
     location_id = mapped_column(Integer, ForeignKey('location.id'))
-    
+    location = relationship('Location', back_populates='events')
+    contract_id = mapped_column(Integer, ForeignKey('contract.id'))
+    contract = relationship('Contract', back_populates='event')
+
+    supportContact_id = mapped_column(Integer, ForeignKey('user.id'))
 
 
 class Contract(Base):
@@ -84,6 +84,8 @@ class Contract(Base):
     commercialContact_id = mapped_column(Integer, ForeignKey('user.id'), nullable=True)
     client_id = mapped_column(Integer, ForeignKey('client.id'))
     client = relationship('Client', back_populates='contracts')
+    event = relationship('Event', back_populates='contract')
+
 
 class Status(Base):
     """
@@ -114,9 +116,15 @@ class Location(Base):
     __tablename__ = 'location'
     id = mapped_column(Integer, primary_key=True)
     address = mapped_column(String(150), nullable=False)
-
+    events = relationship('Event', back_populates='location')
         
-
+class Role(Base):
+    """Role to manage permissions commercial / support / gestion """
+    __tablename__ = 'role'
+    id = mapped_column(Integer, primary_key=True)
+    name = mapped_column(String(50), nullable=False, unique=True)
+    users = relationship('User', back_populates='role')
+  
 
 
 
