@@ -1,9 +1,10 @@
 import click
 from src.crud import delete_database, recreate_database, populate_database
-from src.controller import add_location, auth_user, verify_auth
+from src.controller import Controller
 
 __appname = "EPIC EVENTS"
 
+c = Controller()
 
 @click.group
 def cli():
@@ -12,11 +13,11 @@ def cli():
 
 @cli.command()
 def login():
-    auth_user()
+    c.auth_user()
 
 @cli.command()
 def checklogin():
-    verify_auth()
+    c.verify_auth()
 
 @cli.command()
 def populatedb():
@@ -37,7 +38,7 @@ def dropdb():
 
 @cli.command()
 def addlocation():
-    add_location()
+    c.add_location()
 
 
 if __name__ == '__main__':

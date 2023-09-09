@@ -2,12 +2,22 @@ import sys
 sys.path.append("..") # Adds higher directory to python modules path.
 from config import DATABASE_URI
 
+from argon2 import PasswordHasher
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from src.models import Base
-
+from src.models import Base, Location, User, Role, Company, Client, Status, Contract, Event
+from src.population import (
+    USER_POPULATION,
+    ROLE_POPULATION,
+    LOCATION_POPULATION,
+    COMPANY_POPULATION,
+    CLIENT_POPULATION,
+    STATUS_POPULATION,
+    CONTRACT_POPULATION,
+    EVENT_POPULATION
+)
 from contextlib import contextmanager
 
 
@@ -15,6 +25,7 @@ engine = create_engine(DATABASE_URI)
 
 Session = sessionmaker(bind=engine)
 
+PH = PasswordHasher()
 
 @contextmanager
 def session_scope():
@@ -59,6 +70,7 @@ def populate_database():
             user.password = PH.hash(u['password'])
             user.firstName = u['firstName']
             user.lastName = u['lastName']
+            user.login = u['login']
             user.email = u['email']
             user.id = u['id']
             user.role_id = u['role_id']

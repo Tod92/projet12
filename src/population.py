@@ -4,6 +4,7 @@ USER_POPULATION = [
         "id":1,
         "firstName":"Omer",
         "lastName":"Simpson",
+        "login":"osim",
         "email":"osimpson@gmail.com",
         "password":"1234",
         "role_id":1
@@ -12,6 +13,7 @@ USER_POPULATION = [
         "id":2,
         "firstName":"Marge",
         "lastName":"Simpson",
+        "login":"msim",
         "email":"msimpson@gmail.com",
         "password":"AZERTY",
         "role_id":2

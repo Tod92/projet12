@@ -1,6 +1,6 @@
 import sys
 sys.path.append("..") # Adds higher directory to python modules path.
-from config import SECRET_KEY, TOKEN_FILE, TOKEN_LIFESPAN_MINUTES
+from config import SECRET_KEY, TOKEN_FILE, TOKEN_LIFETIME_SECONDS
 
 import json
 import jwt
@@ -11,7 +11,7 @@ class AuthManager:
     Manager for user authentication
     """
     _json_key_name = 'token'
-    _token_key_name = 'email'
+    _token_key_name = 'login'
 
     def __init__(self, user):
         self.user = user
@@ -22,7 +22,7 @@ class AuthManager:
             token = json.load(f)[cls._json_key_name]
             try:
                 result = jwt.decode(token, SECRET_KEY, algorithms="HS256")
-                return result['email']
+                return result[cls._token_key_name]
             except jwt.ExpiredSignatureError:
                 return None
 
@@ -30,8 +30,13 @@ class AuthManager:
 
     @classmethod
     def gen_token(cls, user):
-        email = user.email
-        payload = {cls._token_key_name:email, 'exp':datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(seconds=300)}
+        """
+        Creates a jwt token with wanted lifetime, with payload : {"login":"userlogin"}
+        saves it in local json file 
+        """
+        login = user.login
+        payload = {cls._token_key_name:login, 'exp':datetime.datetime.now(tz=datetime.timezone.utc)\
+                    + datetime.timedelta(seconds=TOKEN_LIFETIME_SECONDS)}
         token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
         file = open(TOKEN_FILE, 'w')
         json.dump({cls._json_key_name:token}, file)

@@ -20,7 +20,7 @@ class AuthView(View):
         return self.password
         
     def not_found(self):
-        click.echo("USERNAME NOT FOUND !!")
+        click.echo("USER NOT FOUND !!")
  
     def bad_password(self):
         click.echo("INCORRECT PASSWORD !!")
@@ -34,10 +34,13 @@ class AuthView(View):
     def valid_token(self):
         click.echo("Valid token found in local files")
 
+    def invalid_token(self):
+        click.echo("Token found but not valid !")
+        
     def is_logged_in(self, name):
         click.echo(f"You are logged in as {name}")
 
-        
+
 class LocationView(View):
     """"""
 

@@ -19,6 +19,8 @@ class User(Base):
     id = mapped_column(Integer, primary_key=True)
     firstName = mapped_column(String(50), nullable=False)
     lastName = mapped_column(String(50), nullable=False)
+    # Login as 'flas' : 'jbon' for Bond, 'jbou' for Bourne
+    login = mapped_column(String(4),nullable=False, unique=True)
     email = mapped_column(String(50), nullable=False, unique=True)
     password = mapped_column(String(200), nullable=False)
     role_id = mapped_column(Integer, ForeignKey('role.id'))
