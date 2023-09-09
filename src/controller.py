@@ -46,8 +46,23 @@ def auth_user():
         view.success(success)
 
 def verify_auth():
+    view = AuthView()
+    user = None
     email = AuthManager.auth()
-    print('logged as : ' + email)
+    if email:
+        view.valid_token()
+        with session_scope() as s:
+            request = select(User).where(User.email == email)
+            user = s.execute(request).first()[0]
+            if user:
+                view.is_logged_in(user.fullName)
+                print(user.role.name)
+                return user
+            else:
+                print(f'user with mail {email} NOT FOUND in database !!!')
+    else:
+        print('INVALID TOKEN !!')
+
 
 def add_location():
     view = LocationView()

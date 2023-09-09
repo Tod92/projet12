@@ -20,13 +20,18 @@ class AuthManager:
     def auth(cls):
         with open(TOKEN_FILE) as f:
             token = json.load(f)[cls._json_key_name]
-            email = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])[cls._token_key_name] 
-            return email
+            try:
+                result = jwt.decode(token, SECRET_KEY, algorithms="HS256")
+                return result['email']
+            except jwt.ExpiredSignatureError:
+                return None
+
+
 
     @classmethod
     def gen_token(cls, user):
         email = user.email
-        payload = {cls._token_key_name:email, 'exp':datetime.datetime.now() + datetime.timedelta(seconds=30)}
+        payload = {cls._token_key_name:email, 'exp':datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(seconds=300)}
         token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
         file = open(TOKEN_FILE, 'w')
         json.dump({cls._json_key_name:token}, file)

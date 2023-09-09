@@ -31,7 +31,13 @@ class AuthView(View):
         else:
             click.echo("SOMETHING WENT WRONG !!")
 
+    def valid_token(self):
+        click.echo("Valid token found in local files")
 
+    def is_logged_in(self, name):
+        click.echo(f"You are logged in as {name}")
+
+        
 class LocationView(View):
     """"""
 

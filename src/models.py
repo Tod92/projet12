@@ -27,6 +27,10 @@ class User(Base):
     def __repr__(self):
         return "<User(firstName='{}', LastName='{}')>"\
                 .format(self.firstName, self.lastName)
+    
+    @property
+    def fullName(self):
+        return self.firstName + ' ' + self.lastName
  
 class Client(Base):
     """
