@@ -23,6 +23,7 @@ class User(Base):
     password = mapped_column(String(200), nullable=False)
     role_id = mapped_column(Integer, ForeignKey('role.id'))
     role = relationship('Role',back_populates='users')
+    
     def __repr__(self):
         return "<User(firstName='{}', LastName='{}')>"\
                 .format(self.firstName, self.lastName)

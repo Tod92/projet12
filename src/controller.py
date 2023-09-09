@@ -17,7 +17,7 @@ from src.population import (
     CONTRACT_POPULATION,
     EVENT_POPULATION
 )
-
+from src.auth import AuthManager
 from sqlalchemy import select
 
 
@@ -42,7 +42,12 @@ def auth_user():
                 break
             except VerifyMismatchError:
                 view.bad_password()
-        
+        success = AuthManager.gen_token(user)
+        view.success(success)
+
+def verify_auth():
+    email = AuthManager.auth()
+    print('logged as : ' + email)
 
 def add_location():
     view = LocationView()

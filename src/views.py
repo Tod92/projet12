@@ -24,6 +24,12 @@ class AuthView(View):
  
     def bad_password(self):
         click.echo("INCORRECT PASSWORD !!")
+    
+    def success(self, bool=True):
+        if bool == True:
+            click.echo("Authentication OK !")
+        else:
+            click.echo("SOMETHING WENT WRONG !!")
 
 
 class LocationView(View):

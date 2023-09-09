@@ -1,6 +1,6 @@
 import click
 from src.crud import delete_database, recreate_database, populate_database
-from src.controller import add_location, auth_user
+from src.controller import add_location, auth_user, verify_auth
 
 __appname = "EPIC EVENTS"
 
@@ -13,6 +13,10 @@ def cli():
 @cli.command()
 def login():
     auth_user()
+
+@cli.command()
+def checklogin():
+    verify_auth()
 
 @cli.command()
 def populatedb():
