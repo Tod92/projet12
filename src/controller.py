@@ -85,29 +85,26 @@ class Controller:
         view = ClientView()
         with session_scope() as s:
             request = select(Client)
-            clients = s.execute(request).all()
+            clients = s.scalars(request).all()
             for c in clients:
-                client = c[0]
-                view.detail(client)
+                view.detail(c)
 
     def list_contracts(self):
         user = self.get_logged_user_or_ask_login()
         view = ContractView()
         with session_scope() as s:
             request = select(Contract)
-            contracts = s.execute(request).all()
+            contracts = s.scalars(request).all()
             for c in contracts:
-                contract = c[0]
-                view.detail(contract)
+                view.detail(c)
 
     def list_events(self):
         user = self.get_logged_user_or_ask_login()
         view = EventView()
         with session_scope() as s:
             request = select(Event)
-            events = s.execute(request).all()
+            events = s.scalars(request).all()
             for e in events:
-                event = e[0]
-                view.detail(event)
+                view.detail(e)
 
 
