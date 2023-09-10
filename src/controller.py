@@ -6,7 +6,7 @@ sys.path.append("..") # Adds higher directory to python modules path.
 
 from src.crud import session_scope, PermissionManager
 from src.models import Location, User, Role, Company, Client, Status, Contract, Event
-from src.views import View, LocationView, AuthView, ClientView, ContractView, EventView
+from src.views import View, LocationView, AuthView, ClientView, ContractView, EventView, UserView
 
 from src.auth import AuthManager
 from sqlalchemy import select
@@ -69,10 +69,57 @@ class Controller:
         return login
         
     def add_user(self):
-        view = UserView()
         _permission = 'isGestion'
+        view = UserView()
         login = self.get_logged_user_or_ask_login()
+        PM = PermissionManager(_permission, login)
+        if PM.has_permission() == False:
+            view.permission_denied()
+            exit()
+        with session_scope() as s:
+            user = User()
+            roles = s.scalars(select(Role)).all()
+            user.role_id = view.pick_role(roles)
+            user.firstName, user.lastName, user.login, user.email, user.password = view.get_info()
+            user.password = PH.hash(user.password)
+            s.add(user)
 
+    def add_client(self):
+        _permission = 'isCommercial'
+        view = ClientView()
+
+    def create(self, table=None):
+        if table == 'user':
+            _permission = 'isGestion'
+            view = UserView()
+        if table == 'contract':
+            _permission = 'isGestion'
+            view = ContractView()
+        if table == 'event':
+            _permission = 'isCommercial'
+            view = EventView()
+        login = self.get_logged_user_or_ask_login()
+        PM = PermissionManager(_permission, login)
+        if PM.has_permission() == False:
+            view.permission_denied()
+            exit()
+                       
+        with session_scope() as s:
+            if table == 'user':
+                user = User()
+                roles = s.scalars(select(Role)).all()
+                user.role_id = view.pick_role(roles)
+                user.firstName, user.lastName, user.login, user.email, user.password = view.get_info()
+                user.password = PH.hash(user.password)
+                s.add(user)
+            elif table == 'contract':
+                contract = Contract()
+                clients = s.scalars(select(Client)).all()
+                contract.client_id = view.pick_client(clients)
+                contract.description, contract.totalAmount = view.get_info()
+                s.add(contract)
+            elif table == 'event':
+                pass
 
     def add_location(self):
         view = LocationView()

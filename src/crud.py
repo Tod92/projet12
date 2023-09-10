@@ -55,6 +55,8 @@ class PermissionManager:
         with session_scope() as s:
             request = select(User).where(User.login == self._login)
             self._user = s.scalars(request).first()
+            if self._user.role.name == 'Admin':
+                return True
             if self._permission == 'isAuth':
                 if self._user:
                     return True
@@ -88,7 +90,6 @@ def populate_database():
         for r in ROLE_POPULATION:
             role = Role()
             role.name = r['name']
-            role.id = r['id']
             s.add(role)
         # User
         for u in USER_POPULATION:
@@ -98,20 +99,17 @@ def populate_database():
             user.lastName = u['lastName']
             user.login = u['login']
             user.email = u['email']
-            user.id = u['id']
             user.role_id = u['role_id']
             s.add(user)
         # Location
         for l in LOCATION_POPULATION:
             location = Location()
             location.address = l['address']
-            location.id = l['id']
             s.add(location)
     with session_scope() as s:
         # Company:
         for c in COMPANY_POPULATION:
             company = Company()
-            company.id = c['id']
             company.name = c['name']
             company.location_id = c['location_id']
             s.add(company)
@@ -119,7 +117,6 @@ def populate_database():
         # Client:
         for c in CLIENT_POPULATION:
             client = Client()
-            client.id = c['id']
             client.firstName = c['firstName']
             client.lastName = c['lastName']
             client.email = c['email']
@@ -130,14 +127,12 @@ def populate_database():
         # Status:
         for stat in STATUS_POPULATION:
             status = Status()
-            status.id = stat['id']
             status.name = stat['name']
             s.add(status)
     with session_scope() as s:
         # Contract:
         for c in CONTRACT_POPULATION:
             contract = Contract()
-            contract.id = c['id']
             contract.description = c['description']
             contract.totalAmount = c['totalAmount']
             contract.remainingAmount = c['remainingAmount']
@@ -148,7 +143,6 @@ def populate_database():
         #Event:
         for e in EVENT_POPULATION:
             event = Event()
-            event.id = e['id']
             event.name = e['name']
             event.attendees = e['attendees']
             event.notes = e['notes']

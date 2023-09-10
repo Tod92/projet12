@@ -47,12 +47,20 @@ def listevents():
     c.list('event')
     
 @cli.command()
-def addlocation():
-    c.add_location()
+def createlocation():
+    c.create('location')
 
 @cli.command()
 def createuser():
-    c.add_user()
+    c.create('user')
+
+@cli.command()
+def createcontract():
+    c.create('contract')
+
+@cli.command()
+def createevent():
+    c.create('event')
 
 if __name__ == '__main__':
     cli()

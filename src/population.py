@@ -1,7 +1,6 @@
 
 USER_POPULATION = [
     {
-        "id":1,
         "firstName":"Omer",
         "lastName":"Simpson",
         "login":"osim",
@@ -10,7 +9,6 @@ USER_POPULATION = [
         "role_id":1
     },
     {
-        "id":2,
         "firstName":"Marge",
         "lastName":"Simpson",
         "login":"msim",
@@ -19,7 +17,6 @@ USER_POPULATION = [
         "role_id":2
     },
     {
-        "id":3,
         "firstName":"Bart",
         "lastName":"Simpson",
         "login":"bsim",
@@ -31,42 +28,34 @@ USER_POPULATION = [
 
 ROLE_POPULATION = [
     {
-        "id":1,
         "name":"Gestion"
     },
     {
-        "id":2,
         "name":"Support"
     },
     {
-        "id":3,
         "name":"Commercial"
     }    
 ]
 
 LOCATION_POPULATION = [
     {
-        "id":1,
         "address":"12, rue des bois"
     },
     {
-        "id":2,
         "address":"221b Baker Street"  
     },
     {
-        "id":3,
         "address":"0, avenue du Big Bang"
     },
 ]
 
 COMPANY_POPULATION = [
     {
-        "id":1,
         "name":"POKEMON INC",
         "location_id":1
     },
     {
-        "id":2,
         "name":"AVENGERS INC",
         "location_id":2
     }
@@ -74,7 +63,6 @@ COMPANY_POPULATION = [
 
 CLIENT_POPULATION = [
     {
-        "id":1,
         "firstName":"Pika",
         "lastName":"Chu",
         "email":"pika.chu@gmail.com",
@@ -82,7 +70,6 @@ CLIENT_POPULATION = [
         "company_id":1
     },
     {
-        "id":2,
         "firstName":"Bulbi",
         "lastName":"Zare",
         "email":"bulbi.zare@gmail.com",
@@ -90,7 +77,6 @@ CLIENT_POPULATION = [
         "company_id":1
     },
     {
-        "id":3,
         "firstName":"Iron",
         "lastName":"Man",
         "email":"iron.man@gmail.com",
@@ -101,18 +87,15 @@ CLIENT_POPULATION = [
 
 STATUS_POPULATION = [
     {
-        "id":1,
         "name":"En cours"
     },
     {
-        "id":2,
         "name":"Terminé"
     }
 ]
 
 CONTRACT_POPULATION = [
     {
-        "id":1,
         "description":"Contract de maintenance éléctrique avec le client PIKA CHU (POKEMON INC)",
         "totalAmount":1560,
         "remainingAmount":1560,
@@ -120,7 +103,6 @@ CONTRACT_POPULATION = [
         "user_id":3
     },
     {
-        "id":2,
         "description":"Contract bancaire avec Tony Stark",
         "totalAmount":999999,
         "remainingAmount":999999,
@@ -128,7 +110,6 @@ CONTRACT_POPULATION = [
         "user_id":3
     },
     {
-        "id":3,
         "description":"Contrat pour un stand Avengers à la Comic Con",
         "totalAmount":12,
         "remainingAmount":16,
@@ -139,7 +120,6 @@ CONTRACT_POPULATION = [
 
 EVENT_POPULATION = [
     {
-        "id":1,
         "name":"Comic con",
         "attendees":5000,
         "notes":"cosplay à gogo !",
@@ -148,7 +128,6 @@ EVENT_POPULATION = [
 
     },
     {
-        "id":2,
         "name":"Combat de Pokemon type feu",
         "attendees":200,
         "notes":"Penser à amener un extincteur",

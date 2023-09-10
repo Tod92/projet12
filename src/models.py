@@ -16,7 +16,7 @@ Base = declarative_base()
 
 class User(Base):
     __tablename__ = 'user'
-    id = mapped_column(Integer, primary_key=True)
+    id = mapped_column(Integer, primary_key=True, autoincrement=True)
     firstName = mapped_column(String(50), nullable=False)
     lastName = mapped_column(String(50), nullable=False)
     # Login as 'flas' : 'jbon' for Bond, 'jbou' for Bourne
