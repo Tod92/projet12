@@ -6,7 +6,7 @@ sys.path.append("..") # Adds higher directory to python modules path.
 
 from src.crud import session_scope
 from src.models import Location, User, Role, Company, Client, Status, Contract, Event
-from src.views import LocationView, AuthView, ClientView
+from src.views import LocationView, AuthView, ClientView, ContractView, EventView
 
 from src.auth import AuthManager
 from sqlalchemy import select
@@ -89,4 +89,25 @@ class Controller:
             for c in clients:
                 client = c[0]
                 view.detail(client)
+
+    def list_contracts(self):
+        user = self.get_logged_user_or_ask_login()
+        view = ContractView()
+        with session_scope() as s:
+            request = select(Contract)
+            contracts = s.execute(request).all()
+            for c in contracts:
+                contract = c[0]
+                view.detail(contract)
+
+    def list_events(self):
+        user = self.get_logged_user_or_ask_login()
+        view = EventView()
+        with session_scope() as s:
+            request = select(Event)
+            events = s.execute(request).all()
+            for e in events:
+                event = e[0]
+                view.detail(event)
+
 

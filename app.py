@@ -38,7 +38,14 @@ def dropdb():
 def listclients():
     c.list_clients()
     
-
+@cli.command()
+def listcontracts():
+    c.list_contracts()
+    
+@cli.command()
+def listevents():
+    c.list_events()
+    
 @cli.command()
 def addlocation():
     c.add_location()

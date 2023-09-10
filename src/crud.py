@@ -116,6 +116,7 @@ def populate_database():
             contract.totalAmount = c['totalAmount']
             contract.remainingAmount = c['remainingAmount']
             contract.client_id = c['client_id']
+            contract.user_id = c['user_id']
             s.add(contract)
     with session_scope() as s:
         #Event:

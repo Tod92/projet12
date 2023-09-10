@@ -42,9 +42,18 @@ class AuthView(View):
 
 class ClientView(View):
     def detail(self, client):
-        click.echo(f'{client.firstName} {client.lastName} {client.email} phone:{client.phone} company:{client.company.name} ' +\
+        click.echo(f'{client.id}:{client.firstName} {client.lastName} {client.email} phone:{client.phone} company:{client.company.name} ' +\
                    f'created:{client.creationDate} last update:{client.lastUpdateDate}')
 
+class ContractView(View):
+    def detail(self, contract):
+        click.echo(f'{contract.id}:{contract.status.name} {contract.client.firstName} {contract.client.lastName} ({contract.client.company.name}) '+\
+                   f'amount :{contract.totalAmount} pending:{contract.remainingAmount} commercial:{contract.commercialContact.login} created:{contract.creationDate}')
+        
+class EventView(View):
+    def detail(self, event):
+        click.echo(f'{event.id}: {event.name} ({event.contract.client.company.name}) debut:{event.startDate} fin:{event.endDate} ' +\
+                   f'attendees:{event.attendees} location:{event.location.address}')
 
 class LocationView(View):
     """"""
