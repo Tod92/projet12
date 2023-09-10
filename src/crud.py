@@ -41,7 +41,10 @@ def session_scope():
 
 class PermissionManager:
     """
-    Manage role based user permission
+    Manage role based user permission. May need object instance to check if user affected to it.
+    'isAuth' : user is authenticated in app
+    'isAffectedTo' : user is reponsable of object instance
+    'isGestion' 'isCommercial' 'isSupport' : user has role
     """
     def __init__(self, permission, user) -> None:
         self._permission = permission
