@@ -119,7 +119,18 @@ class Controller:
                 contract.description, contract.totalAmount = view.get_info()
                 s.add(contract)
             elif table == 'event':
-                pass
+                event = Event()
+                # Un event se crée à partir d'un contrat signé dont il est responsable
+                user = s.scalars(select(User).where(User.login == login)).first()
+                contracts = s.scalars(select(Contract).where(Contract.user_id == user.id)).all()
+                contracts = [c for c in contracts if c.status.name == 'signed' and c.event_id is None ]
+
+                if contracts:
+                    event.contract_id = view.pick_contract(contracts)
+                else:
+                    view.no_contract_found()
+                    exit()
+
 
     def add_location(self):
         view = LocationView()

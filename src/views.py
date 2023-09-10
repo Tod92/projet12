@@ -86,6 +86,15 @@ class EventView(View):
     def detail(self, event):
         click.echo(f'{event.id}: {event.name} ({event.contract.client.company.name}) debut:{event.startDate} fin:{event.endDate} ' +\
                    f'attendees:{event.attendees} location:{event.location.address}')
+ 
+    def no_contract_found(self):
+        click.echo('No contract found to create an event from !')
+
+    def pick_contract(self, contracts):
+        for c in contracts:
+            click.echo(f'{c.id} : {c.client.firstName} {c.client.lastName} ({c.client.company.name}) {c.description} amount:{c.amount}')
+        contract_id = click.prompt('Please pick a contract', type=int)
+        return contract_id
 
 class LocationView(View):
     """"""
