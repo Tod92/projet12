@@ -4,7 +4,7 @@ from config import DATABASE_URI
 
 from argon2 import PasswordHasher
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
 
 from src.models import Base, Location, User, Role, Company, Client, Status, Contract, Event
@@ -46,27 +46,31 @@ class PermissionManager:
     'isAffectedTo' : user is reponsable of object instance
     'isGestion' 'isCommercial' 'isSupport' : user has role
     """
-    def __init__(self, permission, user) -> None:
+    def __init__(self, permission, login) -> None:
         self._permission = permission
-        self._user = user
+        self._login = login
+
 
     def has_permission(self, instance=None):
-        if self._permission == 'isAuth':
-            if self._user:
-                return True
-        elif self._permission == 'isAffectedTo':
-            if instance.user_id == self._user.id:
-                return True
-        elif self._permission == 'isGestion':
-            if self._user.role.name == 'Gestion':
-                return True
-        elif self._permission == 'isCommercial':
-            if self._user.role.name == 'Commercial':
-                return True
-        elif self._permission == 'isSupport':
-            if self._user.role.name == 'Support':
-                return True
-        return False
+        with session_scope() as s:
+            request = select(User).where(User.login == self._login)
+            self._user = s.scalars(request).first()
+            if self._permission == 'isAuth':
+                if self._user:
+                    return True
+            elif self._permission == 'isAffectedTo':
+                if instance.user_id == self._user.id:
+                    return True
+            elif self._permission == 'isGestion':
+                if self._user.role.name == 'Gestion':
+                    return True
+            elif self._permission == 'isCommercial':
+                if self._user.role.name == 'Commercial':
+                    return True
+            elif self._permission == 'isSupport':
+                if self._user.role.name == 'Support':
+                    return True
+            return False
 
 def delete_database():
     Base.metadata.drop_all(engine)

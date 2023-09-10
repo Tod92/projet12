@@ -15,9 +15,9 @@ def cli():
 def login():
     c.auth_user()
 
-@cli.command()
-def checklogin():
-    c.verify_auth()
+# @cli.command()
+# def checklogin():
+#     c.verify_auth()
 
 @cli.command()
 def populatedb():
@@ -29,27 +29,30 @@ def initdb():
     recreate_database()
     click.echo('Initialized the database')
 
-@cli.command()
-def dropdb():
-    delete_database()
-    click.echo('Dropped the database')
+# @cli.command()
+# def dropdb():
+#     delete_database()
+#     click.echo('Dropped the database')
 
 @cli.command()
 def listclients():
-    c.list_clients()
+    c.list('client')
     
 @cli.command()
 def listcontracts():
-    c.list_contracts()
+    c.list('contract')
     
 @cli.command()
 def listevents():
-    c.list_events()
+    c.list('event')
     
 @cli.command()
 def addlocation():
     c.add_location()
 
+@cli.command()
+def createuser():
+    c.add_user()
 
 if __name__ == '__main__':
     cli()

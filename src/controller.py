@@ -6,7 +6,7 @@ sys.path.append("..") # Adds higher directory to python modules path.
 
 from src.crud import session_scope, PermissionManager
 from src.models import Location, User, Role, Company, Client, Status, Contract, Event
-from src.views import LocationView, AuthView, ClientView, ContractView, EventView
+from src.views import View, LocationView, AuthView, ClientView, ContractView, EventView
 
 from src.auth import AuthManager
 from sqlalchemy import select
@@ -68,7 +68,10 @@ class Controller:
             login = self.auth_user()
         return login
         
-
+    def add_user(self):
+        view = UserView()
+        _permission = 'isGestion'
+        login = self.get_logged_user_or_ask_login()
 
 
     def add_location(self):
@@ -80,39 +83,29 @@ class Controller:
             location.address = input
             s.add(location)
 
-    def list_clients(self):
-        view = ClientView()
-        _permission = 'isCommercial'
+    def list(self, table=None):
+        _permission = 'isAuth'
         login = self.get_logged_user_or_ask_login()
-        with session_scope() as s:
-            request = select(User).where(User.login == login)
-            user = s.scalars(request).first()
-            PM = PermissionManager(_permission, user)
-            if PM.has_permission() == False:
-                view.permission_denied()
-                exit()
+        PM = PermissionManager(_permission, login)
+        if PM.has_permission() == False:
+            view = View()
+            view.permission_denied()
+            exit()
+        else:
+            with session_scope() as s:
+                if table == 'client':
+                    view = ClientView()
+                    request = select(Client)
+                elif table == 'contract':
+                    view = ContractView()
+                    request = select(Contract)
+                elif table == 'event':
+                    view = EventView()
+                    request = select(Event)
+                instances = s.scalars(request).all()
+                for i in instances:
+                    view.detail(i)
 
-            request = select(Client)
-            clients = s.scalars(request).all()
-            for c in clients:
-                view.detail(c)
 
-    def list_contracts(self):
-        user = self.get_logged_user_or_ask_login()
-        view = ContractView()
-        with session_scope() as s:
-            request = select(Contract)
-            contracts = s.scalars(request).all()
-            for c in contracts:
-                view.detail(c)
-
-    def list_events(self):
-        user = self.get_logged_user_or_ask_login()
-        view = EventView()
-        with session_scope() as s:
-            request = select(Event)
-            events = s.scalars(request).all()
-            for e in events:
-                view.detail(e)
 
 
