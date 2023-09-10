@@ -34,7 +34,10 @@ def dropdb():
     delete_database()
     click.echo('Dropped the database')
 
- 
+@cli.command()
+def listclients():
+    c.list_clients()
+    
 
 @cli.command()
 def addlocation():

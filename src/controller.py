@@ -6,7 +6,7 @@ sys.path.append("..") # Adds higher directory to python modules path.
 
 from src.crud import session_scope
 from src.models import Location, User, Role, Company, Client, Status, Contract, Event
-from src.views import LocationView, AuthView
+from src.views import LocationView, AuthView, ClientView
 
 from src.auth import AuthManager
 from sqlalchemy import select
@@ -14,7 +14,6 @@ from sqlalchemy import select
 
 PH = PasswordHasher()
 class Controller:
-
     def auth_user(self):
         """
         Asks user for login and password then gets him authenticated with jwt token in json file 
@@ -39,6 +38,7 @@ class Controller:
                     view.bad_password()
             success = AuthManager.gen_token(user)
             view.success(success)
+            return user
 
     def verify_auth(self):
         view = AuthView()
@@ -58,6 +58,18 @@ class Controller:
         else:
             view.invalid_token()
 
+    def get_logged_user_or_ask_login(self):
+        """
+        Check user credentials and ask for loggin if token expired or not found
+        Returns user instance
+        """
+        user = self.verify_auth()
+        while user == None:
+            user = self.auth_user()
+        return user
+        
+
+
 
     def add_location(self):
         view = LocationView()
@@ -67,4 +79,14 @@ class Controller:
             location = Location()
             location.address = input
             s.add(location)
+
+    def list_clients(self):
+        user = self.get_logged_user_or_ask_login()
+        view = ClientView()
+        with session_scope() as s:
+            request = select(Client)
+            clients = s.execute(request).all()
+            for c in clients:
+                client = c[0]
+                view.detail(client)
 

@@ -36,9 +36,14 @@ class AuthView(View):
 
     def invalid_token(self):
         click.echo("Token found but not valid !")
-        
+
     def is_logged_in(self, name):
         click.echo(f"You are logged in as {name}")
+
+class ClientView(View):
+    def detail(self, client):
+        click.echo(f'{client.firstName} {client.lastName} {client.email} phone:{client.phone} company:{client.company.name} ' +\
+                   f'created:{client.creationDate} last update:{client.lastUpdateDate}')
 
 
 class LocationView(View):
