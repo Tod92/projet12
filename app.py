@@ -12,8 +12,12 @@ def cli():
     pass
 
 @cli.command()
-def login():
-    c.auth_user()
+@click.option('-o',help="check")
+def login(o):
+    if o == 'check':
+        c.verify_auth()
+    else:
+        c.auth_user()
 
 # @cli.command()
 # def checklogin():
@@ -29,38 +33,16 @@ def initdb():
     recreate_database()
     click.echo('Initialized the database')
 
-# @cli.command()
-# def dropdb():
-#     delete_database()
-#     click.echo('Dropped the database')
+@cli.command()
+@click.argument('table')
+def list(table):
+    c.list(table)
 
 @cli.command()
-def listclients():
-    c.list('client')
-    
-@cli.command()
-def listcontracts():
-    c.list('contract')
-    
-@cli.command()
-def listevents():
-    c.list('event')
-    
-@cli.command()
-def createlocation():
-    c.create('location')
+@click.argument('table')
+def create(table):
+    c.create(table)
 
-@cli.command()
-def createuser():
-    c.create('user')
-
-@cli.command()
-def createcontract():
-    c.create('contract')
-
-@cli.command()
-def createevent():
-    c.create('event')
 
 if __name__ == '__main__':
     cli()

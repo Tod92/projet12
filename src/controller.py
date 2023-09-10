@@ -41,6 +41,9 @@ class Controller:
             return user.login
 
     def verify_auth(self):
+        """
+        Verify validity of jwt token in json file then checks if corrsponding user found in database
+        """
         view = AuthView()
         user = None
         login = AuthManager.auth()
@@ -92,12 +95,16 @@ class Controller:
         if table == 'user':
             _permission = 'isGestion'
             view = UserView()
-        if table == 'contract':
+        elif table == 'contract':
             _permission = 'isGestion'
             view = ContractView()
-        if table == 'event':
+        elif table == 'event':
             _permission = 'isCommercial'
             view = EventView()
+        else:
+            view = View()
+            view.not_found(table)
+
         login = self.get_logged_user_or_ask_login()
         PM = PermissionManager(_permission, login)
         if PM.has_permission() == False:
@@ -130,7 +137,9 @@ class Controller:
                 else:
                     view.no_contract_found()
                     exit()
-
+                event.location_id = self.add_location()
+                event.startDate, event.endDate, event.attendees, event.notes = view.get_info()
+                s.add(event)
 
     def add_location(self):
         view = LocationView()
@@ -140,7 +149,8 @@ class Controller:
             location = Location()
             location.address = input
             s.add(location)
-
+            return location.id
+        
     def list(self, table=None):
         _permission = 'isAuth'
         login = self.get_logged_user_or_ask_login()

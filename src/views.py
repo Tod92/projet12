@@ -1,5 +1,5 @@
 import click
-
+import datetime
 
 
 
@@ -8,7 +8,17 @@ import click
 class View:
     def permission_denied(self):
          click.echo("PERMISSION DENIED !!")
-       
+
+    def get_date(self, msg):
+        click.echo(msg)
+        day = click.prompt('please enter DAY :', type=int)
+        month = click.prompt('please enter MONTH :', type=int)
+        year = click.prompt('please enter YEAR :', type=int)
+        date = datetime.date(year=year, month=month, day=day)
+        return date
+    
+    def not_found(self, object_type):
+        click.echo(f'{object_type} not found !')
 
 class AuthView(View):
     """"""
@@ -86,7 +96,14 @@ class EventView(View):
     def detail(self, event):
         click.echo(f'{event.id}: {event.name} ({event.contract.client.company.name}) debut:{event.startDate} fin:{event.endDate} ' +\
                    f'attendees:{event.attendees} location:{event.location.address}')
- 
+
+    def get_info(self):
+        startDate = self.get_date('Please enter start date')
+        endDate = self.get_date('Please enter end date')
+        attendees = click.prompt('Please enter number of attendees', type=int)
+        notes = click.prompt('Please enter notes', type=str)
+        return startDate, endDate, attendees, notes
+
     def no_contract_found(self):
         click.echo('No contract found to create an event from !')
 
