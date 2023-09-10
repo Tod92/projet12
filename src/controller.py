@@ -4,7 +4,7 @@ from argon2.exceptions import VerifyMismatchError
 import sys
 sys.path.append("..") # Adds higher directory to python modules path.
 
-from src.crud import session_scope
+from src.crud import session_scope, PermissionManager
 from src.models import Location, User, Role, Company, Client, Status, Contract, Event
 from src.views import LocationView, AuthView, ClientView, ContractView, EventView
 
@@ -38,7 +38,7 @@ class Controller:
                     view.bad_password()
             success = AuthManager.gen_token(user)
             view.success(success)
-            return user
+            return user.login
 
     def verify_auth(self):
         view = AuthView()
@@ -52,7 +52,7 @@ class Controller:
                 if user:
                     view.is_logged_in(user.fullName)
                     view.is_logged_in(user.role.name)
-                    return user
+                    return user.login
                 else:
                     view.not_found()
         else:
@@ -63,10 +63,10 @@ class Controller:
         Check user credentials and ask for loggin if token expired or not found
         Returns user instance
         """
-        user = self.verify_auth()
-        while user == None:
-            user = self.auth_user()
-        return user
+        login = self.verify_auth()
+        while login == None:
+            login = self.auth_user()
+        return login
         
 
 
@@ -81,9 +81,17 @@ class Controller:
             s.add(location)
 
     def list_clients(self):
-        user = self.get_logged_user_or_ask_login()
         view = ClientView()
+        _permission = 'isCommercial'
+        login = self.get_logged_user_or_ask_login()
         with session_scope() as s:
+            request = select(User).where(User.login == login)
+            user = s.scalars(request).first()
+            PM = PermissionManager(_permission, user)
+            if PM.has_permission() == False:
+                view.permission_denied()
+                exit()
+
             request = select(Client)
             clients = s.scalars(request).all()
             for c in clients:

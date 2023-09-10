@@ -6,7 +6,9 @@ import click
 
 
 class View:
-    pass
+    def permission_denied(self):
+         click.echo("PERMISSION DENIED !!")
+       
 
 class AuthView(View):
     """"""

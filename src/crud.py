@@ -39,12 +39,31 @@ def session_scope():
     finally:
         session.close()
 
-# Creation des tables d'après les models, récupérés via le metadata de Base
-# Base.metadata.create_all(engine)
+class PermissionManager:
+    """
+    Manage role based user permission
+    """
+    def __init__(self, permission, user) -> None:
+        self._permission = permission
+        self._user = user
 
-# Suppression des tables
-# Base.metadata.drop_all(engine)
-
+    def has_permission(self, instance=None):
+        if self._permission == 'isAuth':
+            if self._user:
+                return True
+        elif self._permission == 'isAffectedTo':
+            if instance.user_id == self._user.id:
+                return True
+        elif self._permission == 'isGestion':
+            if self._user.role.name == 'Gestion':
+                return True
+        elif self._permission == 'isCommercial':
+            if self._user.role.name == 'Commercial':
+                return True
+        elif self._permission == 'isSupport':
+            if self._user.role.name == 'Support':
+                return True
+        return False
 
 def delete_database():
     Base.metadata.drop_all(engine)
