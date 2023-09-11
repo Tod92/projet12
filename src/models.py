@@ -50,6 +50,9 @@ class Client(Base):
     company_id = mapped_column(Integer, ForeignKey('company.id'))
     company = relationship('Company', back_populates='clients')
 
+    user_id = mapped_column(Integer, ForeignKey('user.id'), nullable=True)
+    commercialContact = relationship('User')
+
     contracts = relationship('Contract', back_populates='client')
 
     @property
@@ -62,6 +65,11 @@ class Event(Base):
     Table event related to Location (many-to-one) and Contract (one-to-one)
     """
     __tablename__ = 'event'
+
+    def __repr__(self):
+        return f"<Event({self.name} start={self.startDate} attendees={self.attendees} \
+            location={self.location.address} contract no={contract.id})>"
+
     id = mapped_column(Integer, primary_key=True)
     name = mapped_column(String(100), nullable=False)
     startDate = mapped_column(Date(), nullable=False, default=date.today())
@@ -81,6 +89,11 @@ class Contract(Base):
     Table contract related to Client (many-to-one) and Event (one-to-one)
     """
     __tablename__ = "contract"
+
+    def __repr__(self):
+        return f"<Contract(client={self.client} company={self.client.company.name} \
+            amount={self.totalAmount} commercial={self.commercialContact} event={self.event})>"
+
     id = mapped_column(Integer, primary_key=True)
     description = mapped_column(String(500), nullable=False)
     totalAmount = mapped_column(Integer)
@@ -88,10 +101,13 @@ class Contract(Base):
     creationDate = mapped_column(Date(), nullable=False, default=date.today())
     status_id = mapped_column(Integer, ForeignKey('status.id'), default=1)
     status = relationship('Status', back_populates='contracts')
+
     user_id = mapped_column(Integer, ForeignKey('user.id'), nullable=True)
     commercialContact = relationship('User')
+
     client_id = mapped_column(Integer, ForeignKey('client.id'))
     client = relationship('Client', back_populates='contracts')
+
     event = relationship('Event', back_populates='contract')
 
 
@@ -100,6 +116,10 @@ class Status(Base):
     Table for contract's status related to CContract (many-to-one)
     """    
     __tablename__ = "status"
+
+    def __repr__(self):
+        return f"<Status({self.name})>"
+
     id = mapped_column(Integer, primary_key=True)
     name = mapped_column(String(20), nullable=False)
     contracts = relationship('Contract', back_populates='status')
@@ -109,6 +129,10 @@ class Company(Base):
     Table company related to Client (one-to-many) and Location (one-to-one)
     """
     __tablename__ = 'company'
+
+    def __repr__(self):
+        return f"<Company({self.name})>"
+
     id = mapped_column(Integer, primary_key=True)
     name = mapped_column(String(100), nullable=False)
 
@@ -122,13 +146,23 @@ class Location(Base):
     Table location related to Company (one-to-one) and/or Event (one-to-many)
     """
     __tablename__ = 'location'
+
+    def __repr__(self):
+        return f"<Location({self.address})>"
+
     id = mapped_column(Integer, primary_key=True)
     address = mapped_column(String(150), nullable=False)
     events = relationship('Event', back_populates='location')
         
 class Role(Base):
     """Role to manage permissions commercial / support / gestion """
+
     __tablename__ = 'role'
+    
+    def __repr__(self):
+        return f"<Role({self.name})>"
+                
+
     id = mapped_column(Integer, primary_key=True)
     name = mapped_column(String(50), nullable=False, unique=True)
     users = relationship('User', back_populates='role')

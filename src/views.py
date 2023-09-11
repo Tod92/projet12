@@ -7,7 +7,7 @@ import datetime
 
 class View:
     def permission_denied(self):
-         click.echo("PERMISSION DENIED !!")
+        click.echo("PERMISSION DENIED !!")
 
     def get_date(self, msg):
         click.echo(msg)
@@ -17,8 +17,17 @@ class View:
         date = datetime.date(year=year, month=month, day=day)
         return date
     
-    def not_found(self, object_type):
+    def not_found(self, object_type=''):
         click.echo(f'{object_type} not found !')
+
+    def unknown_object(self, description='this'):
+        click.echo()
+
+    def pick_in_list(self, instances):
+        tablename = instances[0].__tablename__
+        for i in instances:
+            click.echo(f'{i.id} : {i}')
+        return click.prompt(f'Please pick a {tablename}', type=int)    
 
 class AuthView(View):
     """"""
@@ -43,16 +52,19 @@ class AuthView(View):
         else:
             click.echo("SOMETHING WENT WRONG !!")
 
-    def valid_token(self):
-        click.echo("Valid token found in local files")
+    def valid_token(self, login):
+        click.echo(f"Valid token [{login}] found in local files")
 
     def invalid_token(self):
-        click.echo("Token found but not valid !")
+        click.echo(f"Token found in local files but not valid !")
 
     def is_logged_in(self, name):
         click.echo(f"You are logged in as {name}")
 
 class UserView(View):
+    def detail(self, user):
+        click.echo(f'{user.id}:{user.fullName} login:{user.login} email:{user.email} role:{user.role.name}')
+
     def get_info(self):
         firstName = click.prompt('Please enter first name', type=str)
         lastName = click.prompt('Please enter last name', type=str)
@@ -60,18 +72,19 @@ class UserView(View):
         email = click.prompt('Please enter email', type=str)
         password = click.prompt('Please enter password', type=str)
         return firstName, lastName, login, email, password
-    
-    def pick_role(self, roles):
-        for r in roles:
-            click.echo(f'{r.id} : {r.name}')
-        role_id = click.prompt('Please pick a role', type=int)
-        return role_id
-    
+        
 
 class ClientView(View):
     def detail(self, client):
         click.echo(f'{client.id}:{client.firstName} {client.lastName} {client.email} phone:{client.phone} company:{client.company.name} ' +\
                    f'created:{client.creationDate} last update:{client.lastUpdateDate}')
+ 
+    def get_info(self):
+        firstName = click.prompt('Please enter first name', type=str)
+        lastName = click.prompt('Please enter last name', type=str)
+        email = click.prompt('Please enter email', type=str)
+        phone = click.prompt('Please enter phone', type=str)
+        return firstName, lastName, email, phone
 
 class ContractView(View):
     def detail(self, contract):
@@ -86,11 +99,6 @@ class ContractView(View):
         totalAmount = click.prompt('Please enter contract money amount', type=int)
         return description, totalAmount
 
-    def pick_client(self, clients):
-        for c in clients:
-            click.echo(f'{c.id} : {c.firstName} {c.firstName} ({c.company.name})')
-        client_id = click.prompt('Please pick a client', type=int)
-        return client_id
       
 class EventView(View):
     def detail(self, event):
@@ -107,11 +115,6 @@ class EventView(View):
     def no_contract_found(self):
         click.echo('No contract found to create an event from !')
 
-    def pick_contract(self, contracts):
-        for c in contracts:
-            click.echo(f'{c.id} : {c.client.firstName} {c.client.lastName} ({c.client.company.name}) {c.description} amount:{c.amount}')
-        contract_id = click.prompt('Please pick a contract', type=int)
-        return contract_id
 
 class LocationView(View):
     """"""

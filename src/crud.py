@@ -46,33 +46,30 @@ class PermissionManager:
     'isAffectedTo' : user is reponsable of object instance
     'isGestion' 'isCommercial' 'isSupport' : user has role
     """
-    def __init__(self, permission, login) -> None:
+    def __init__(self, permission, user) -> None:
         self._permission = permission
-        self._login = login
+        self._user = user
 
 
     def has_permission(self, instance=None):
-        with session_scope() as s:
-            request = select(User).where(User.login == self._login)
-            self._user = s.scalars(request).first()
-            if self._user.role.name == 'Admin':
+        if self._user.role.name == 'Admin':
+            return True
+        if self._permission == 'isAuth':
+            if self._user:
                 return True
-            if self._permission == 'isAuth':
-                if self._user:
-                    return True
-            elif self._permission == 'isAffectedTo':
-                if instance.user_id == self._user.id:
-                    return True
-            elif self._permission == 'isGestion':
-                if self._user.role.name == 'Gestion':
-                    return True
-            elif self._permission == 'isCommercial':
-                if self._user.role.name == 'Commercial':
-                    return True
-            elif self._permission == 'isSupport':
-                if self._user.role.name == 'Support':
-                    return True
-            return False
+        elif self._permission == 'isAffectedTo':
+            if instance.user_id == self._user.id:
+                return True
+        elif self._permission == 'isGestion':
+            if self._user.role.name == 'Gestion':
+                return True
+        elif self._permission == 'isCommercial':
+            if self._user.role.name == 'Commercial':
+                return True
+        elif self._permission == 'isSupport':
+            if self._user.role.name == 'Support':
+                return True
+        return False
 
 def delete_database():
     Base.metadata.drop_all(engine)
