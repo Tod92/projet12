@@ -24,11 +24,12 @@ class User(Base):
     email = mapped_column(String(50), nullable=False, unique=True)
     password = mapped_column(String(200), nullable=False)
     role_id = mapped_column(Integer, ForeignKey('role.id'))
-    role = relationship('Role',back_populates='users')
-    
+    role = relationship('Role', back_populates='users')
+    clients = relationship('Client', back_populates='commercialContact')
+
     def __repr__(self):
-        return "<User(firstName='{}', LastName='{}')>"\
-                .format(self.firstName, self.lastName)
+        return "<User({} login={} role={})>"\
+                .format(self.fullName, self.login, self.role.name)
     
     @property
     def fullName(self):
@@ -55,6 +56,9 @@ class Client(Base):
 
     contracts = relationship('Contract', back_populates='client')
 
+    def __repr__(self):
+        return f"<Client({self.fullName} company={self.company.name} commercial={self.commercialContact})>"
+
     @property
     def fullName(self):
         return self.firstName + ' ' + self.lastName
@@ -65,23 +69,23 @@ class Event(Base):
     Table event related to Location (many-to-one) and Contract (one-to-one)
     """
     __tablename__ = 'event'
-
-    def __repr__(self):
-        return f"<Event({self.name} start={self.startDate} attendees={self.attendees} \
-            location={self.location.address} contract no={contract.id})>"
-
     id = mapped_column(Integer, primary_key=True)
     name = mapped_column(String(100), nullable=False)
     startDate = mapped_column(Date(), nullable=False, default=date.today())
     endDate = mapped_column(Date(), nullable=True)
     attendees = mapped_column(Integer, nullable=False)
     notes = mapped_column(String(500), nullable=True)
+
     location_id = mapped_column(Integer, ForeignKey('location.id'))
     location = relationship('Location', back_populates='events')
+
     contract_id = mapped_column(Integer, ForeignKey('contract.id'))
     contract = relationship('Contract', back_populates='event')
 
     supportContact_id = mapped_column(Integer, ForeignKey('user.id'))
+
+    def __repr__(self):
+        return f"<Event({self.name} start={self.startDate} attendees={self.attendees} location={self.location.address} contract no={self.contract.id})>"
 
 
 class Contract(Base):
@@ -89,16 +93,12 @@ class Contract(Base):
     Table contract related to Client (many-to-one) and Event (one-to-one)
     """
     __tablename__ = "contract"
-
-    def __repr__(self):
-        return f"<Contract(client={self.client} company={self.client.company.name} \
-            amount={self.totalAmount} commercial={self.commercialContact} event={self.event})>"
-
     id = mapped_column(Integer, primary_key=True)
     description = mapped_column(String(500), nullable=False)
     totalAmount = mapped_column(Integer)
     remainingAmount = mapped_column(Integer)
     creationDate = mapped_column(Date(), nullable=False, default=date.today())
+
     status_id = mapped_column(Integer, ForeignKey('status.id'), default=1)
     status = relationship('Status', back_populates='contracts')
 
@@ -110,29 +110,29 @@ class Contract(Base):
 
     event = relationship('Event', back_populates='contract')
 
+    def __repr__(self):
+        return f"<Contract(client={self.client.fullName} company={self.client.company.name} amount={self.totalAmount} status={self.status.name})>"
+
+
 
 class Status(Base):
     """
     Table for contract's status related to CContract (many-to-one)
     """    
     __tablename__ = "status"
+    id = mapped_column(Integer, primary_key=True)
+    name = mapped_column(String(20), nullable=False)
+    contracts = relationship('Contract', back_populates='status')
 
     def __repr__(self):
         return f"<Status({self.name})>"
 
-    id = mapped_column(Integer, primary_key=True)
-    name = mapped_column(String(20), nullable=False)
-    contracts = relationship('Contract', back_populates='status')
 
 class Company(Base):
     """
     Table company related to Client (one-to-many) and Location (one-to-one)
     """
     __tablename__ = 'company'
-
-    def __repr__(self):
-        return f"<Company({self.name})>"
-
     id = mapped_column(Integer, primary_key=True)
     name = mapped_column(String(100), nullable=False)
 
@@ -140,33 +140,38 @@ class Company(Base):
 
     location_id = mapped_column(Integer, ForeignKey('location.id'))
 
+    def __repr__(self):
+        return f"<Company({self.name})>"
+
+
 
 class Location(Base):
     """
     Table location related to Company (one-to-one) and/or Event (one-to-many)
     """
     __tablename__ = 'location'
-
-    def __repr__(self):
-        return f"<Location({self.address})>"
-
     id = mapped_column(Integer, primary_key=True)
     address = mapped_column(String(150), nullable=False)
     events = relationship('Event', back_populates='location')
-        
-class Role(Base):
-    """Role to manage permissions commercial / support / gestion """
+   
+    def __repr__(self):
+        return f"<Location({self.address})>"
 
+     
+class Role(Base):
+    """
+    Role to manage permissions commercial / support / gestion 
+    """
     __tablename__ = 'role'
-    
+    id = mapped_column(Integer, primary_key=True)
+    name = mapped_column(String(50), nullable=False, unique=True)
+
+    users = relationship('User', back_populates='role')
+     
     def __repr__(self):
         return f"<Role({self.name})>"
                 
 
-    id = mapped_column(Integer, primary_key=True)
-    name = mapped_column(String(50), nullable=False, unique=True)
-    users = relationship('User', back_populates='role')
-  
 
 
 

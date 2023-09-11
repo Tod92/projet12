@@ -29,6 +29,11 @@ class View:
             click.echo(f'{i.id} : {i}')
         return click.prompt(f'Please pick a {tablename}', type=int)    
 
+    def list_item(self, item):
+        text = str(item.id) + str(item)
+        click.echo(text)
+
+
 class AuthView(View):
     """"""
 
@@ -77,7 +82,7 @@ class UserView(View):
 class ClientView(View):
     def detail(self, client):
         click.echo(f'{client.id}:{client.firstName} {client.lastName} {client.email} phone:{client.phone} company:{client.company.name} ' +\
-                   f'created:{client.creationDate} last update:{client.lastUpdateDate}')
+                   f'created:{client.creationDate} last update:{client.lastUpdateDate} commercial:{client.commercialContact}')
  
     def get_info(self):
         firstName = click.prompt('Please enter first name', type=str)

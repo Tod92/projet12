@@ -127,7 +127,7 @@ class Controller:
                 contract = Contract()
                 # Prompting client for contract
                 clients = s.scalars(select(Client)).all()
-                contract.client_id = view.pick_client(clients)
+                contract.client_id = view.pick_in_list(clients)
                 # Prompting contract informations
                 contract.description, contract.totalAmount = view.get_info()
                 # Creating entry
@@ -198,7 +198,7 @@ class Controller:
             instances = s.scalars(request).all()
             if instances:
                 for i in instances:
-                    view.detail(i)
+                    view.list_item(i)
             else:
                 view.not_found()
 

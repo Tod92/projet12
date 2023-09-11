@@ -13,18 +13,6 @@ def cli():
     pass
 
 @cli.command()
-@click.option('-o',help="check")
-def login(o):
-    """
-    Prompt user for login credentials and authenticate to app.
-    -o check : Doesn't prompt. Just checks current token validity"""
-    if o == 'check':
-        c.verify_auth()
-    else:
-        c.auth_user()
-
-
-@cli.command()
 def populatedb():
     populate_database()
     click.echo('Populated the database')
@@ -35,6 +23,17 @@ def initdb():
     click.echo('Initialized the database')
 
 @cli.command()
+@click.option('-o',help="check")
+def login(o):
+    """
+    Prompt user for login credentials and authenticate to app.
+    -o check : Doesn't prompt. Just checks current token validity"""
+    if o == 'check':
+        c.verify_auth()
+    else:
+        c.auth_user()
+
+@cli.command()
 @click.argument('table')
 @click.option('-o',help="mine")
 def list(table, o):
@@ -43,7 +42,7 @@ def list(table, o):
     options : mine
     """
     if table not in __tablenames:
-        click.echo(f'{table} is not a valid object type. Please try client, contract or event')
+        click.echo(f'{table} is not a valid object type. Please try user, client, contract or event')
         exit()
     else:           
         c.list(table,option=o)
@@ -55,7 +54,7 @@ def create(table):
     create client/contract/event
     """    
     if table not in __tablenames:
-        click.echo(f'{table} is not a valid object type. Please try client, contract or event')
+        click.echo(f'{table} is not a valid object type. Please try user, client, contract or event')
         exit()
     else:    
         c.create(table)
