@@ -150,57 +150,116 @@ class Controller:
                 # Creating entry
                 s.add(event)
 
-        
-    def list(self, table=None, option=None):
+    def update(self, table=None, option=None):
         """
-        Lists objects from table.
+        Updates objects in table
         Must be in ['user', 'client', 'contract', 'event']
         """
-        _permission = 'isAuth'
-        if table == 'user':
-            _permission = 'isGestion'
-        login = self.get_logged_user_or_ask_login()
         with session_scope() as s:
-            view = View()
+            login = self.get_logged_user_or_ask_login()
             # Loading app user from database
             app_user = self.get_user(session=s, login=login)
+            if table == 'user':
+                _permission = 'isGestion'
+                view = UserView()
+                request = select(User)
+            elif table == 'client':
+                _permission = 'isAffectedTo'
+                view = ClientView()
+                request = select(Client).where(Client.user_id == app_user.id)   
+            elif table == 'contract':
+                _permission = 'isCommercial'
+                view = ContractView()
+                request = select(Contract)
+            elif table == 'event':
+                _permission = 'isGestion'
+                view = EventView()
+                request = select(Event)
+            # If table not existing
+            else:
+                view = View()
+                view.unknown_object(description=table)
+                exit()
             # Permission checking
             PM = PermissionManager(_permission, app_user)
             if PM.has_permission() == False:
                 view.permission_denied()
                 exit()
+            # Permission passed. Executing request.
+            instances = s.scalars(request).all()
+            choice = view.pick_in_list(instances)
+            if table == 'user':
+                _updatables = ['firstName', 'lastName', 'email', 'login', 'password', 'role']
+                user = s.scalars(select(User).where(User.id == choice)).first()
+                # Prompting user to choose attribute to update
+                choice = _updatables[view.pick_in_attr(_updatables, user)]
+                if choice == 'firstName':
+                    user.firstName = view.get_str(choice)
+                elif choice == 'lastName':
+                    user.firstName = view.get_str(choice)
+                elif choice == 'email':
+                    user.email = view.get_str(choice)
+                elif choice == 'login':
+                    user.login = view.get_str(choice)
+                elif choice == 'password':
+                    user.password = PH.hash(view.get_password())
+                elif choice == 'role':
+                    roles = s.scalars(select(Role)).all()
+                    user.role_id = view.pick_in_list(roles)
+
+
+    def list(self, table=None, option=None):
+        """
+        Lists objects from table.
+        Must be in ['user', 'client', 'contract', 'event']
+        """
+        with session_scope() as s:
+            login = self.get_logged_user_or_ask_login()
+            # Loading app user from database
+            app_user = self.get_user(session=s, login=login)
             # Targeting class to perform objects listing process
-            if table == 'client':
-                view = ClientView()
-                request = select(Client)
-                if option == 'mine':
-                    request = request.where(Client.user_id == app_user.id)
-            elif table == 'user':
+            if table == 'user':
+                _permission = 'isGestion'
                 view = UserView()
                 request = select(User)
                 if option == 'mine':
                     request = request.where(User.id == app_user.id)
+            elif table == 'client':
+                _permission = 'isAuth'
+                view = ClientView()
+                request = select(Client)
+                if option == 'mine':
+                    request = request.where(Client.user_id == app_user.id)
             elif table == 'contract':
+                _permission = 'isAuth'
                 view = ContractView()
                 request = select(Contract)
                 if option == 'mine':
                     request = request.where(Contract.user_id == app_user.id)
             elif table == 'event':
+                _permission = 'isAuth'
                 view = EventView()
                 request = select(Event)
                 if option == 'mine':
                     request = request.where(Event.user_id == app_user.id)
             # If table not existing
             else:
+                view = View()
                 view.unknown_object(description=table)
                 exit()
-
+            # Permission checking
+            PM = PermissionManager(_permission, app_user)
+            if PM.has_permission() == False:
+                view.permission_denied()
+                exit()
+            # Permission passed. Executing request.
             instances = s.scalars(request).all()
             if instances:
                 for i in instances:
                     view.list_item(i)
             else:
                 view.not_found()
+
 
 
     def add_location(self):

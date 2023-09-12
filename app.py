@@ -41,11 +41,8 @@ def list(table, o):
     list client/contract/event
     options : mine
     """
-    if table not in __tablenames:
-        click.echo(f'{table} is not a valid object type. Please try user, client, contract or event')
-        exit()
-    else:           
-        c.list(table,option=o)
+    check_table_name(table)    
+    c.list(table,option=o)
 
 @cli.command()
 @click.argument('table')
@@ -53,12 +50,23 @@ def create(table):
     """
     create client/contract/event
     """    
+    check_table_name(table)
+    c.create(table)
+
+@cli.command()
+@click.argument('table')
+def update(table):
+    """
+    create client/contract/event
+    """    
+    check_table_name(table)
+    c.update(table)
+
+
+def check_table_name(table):
     if table not in __tablenames:
         click.echo(f'{table} is not a valid object type. Please try user, client, contract or event')
         exit()
-    else:    
-        c.create(table)
-
 
 if __name__ == '__main__':
     cli()

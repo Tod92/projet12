@@ -6,6 +6,7 @@ import datetime
 
 
 class View:
+
     def permission_denied(self):
         click.echo("PERMISSION DENIED !!")
 
@@ -17,6 +18,13 @@ class View:
         date = datetime.date(year=year, month=month, day=day)
         return date
     
+    def get_str(self, msg):
+        return click.prompt(f'please enter {msg} :', type=str)
+
+    def get_password(self):
+        self.password = click.prompt('Please enter password', type=str)
+        return self.password 
+       
     def not_found(self, object_type=''):
         click.echo(f'{object_type} not found !')
 
@@ -26,12 +34,24 @@ class View:
     def pick_in_list(self, instances):
         tablename = instances[0].__tablename__
         for i in instances:
-            click.echo(f'{i.id} : {i}')
+            self.list_item(i)
         return click.prompt(f'Please pick a {tablename}', type=int)    
 
+    def pick_in_attr(self, attr_list, instance):
+        """
+        Asks user to pick an attribute of instance within attr_list.
+        Returns index in attr_list for delected attribute
+        """
+        click.echo(f'Attribute selection for {instance} --')
+        count = 0
+        instance_attr = instance.__dict__
+        for attr in attr_list:
+            count += 1
+            click.echo(f'{count}: {attr} : {instance_attr[attr]} ')
+        return click.prompt(f'Please pick attribute', type=int) - 1
+    
     def list_item(self, item):
-        text = str(item.id) + str(item)
-        click.echo(text)
+        click.echo(f'{item.id} : {item}')
 
 
 class AuthView(View):
@@ -40,10 +60,6 @@ class AuthView(View):
     def get_login(self):
         self.login = click.prompt('Please enter login', type=str)
         return self.login
-
-    def get_password(self):
-        self.password = click.prompt('Please enter password', type=str)
-        return self.password
         
     def not_found(self):
         click.echo("USER NOT FOUND !!")
