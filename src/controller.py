@@ -122,7 +122,6 @@ class Controller:
                 client.user_id = app_user.id
                 # Creating entry
                 s.add(client)
-
             elif table == 'contract':
                 contract = Contract()
                 # Prompting client for contract
@@ -187,10 +186,13 @@ class Controller:
                 exit()
             # Permission passed. Executing request.
             instances = s.scalars(request).all()
-            choice = view.pick_in_list(instances)
+            if instances == []:
+                view.not_found(table)
+                exit()
+            choice_id = view.pick_in_list(instances)
             if table == 'user':
                 _updatables = ['firstName', 'lastName', 'email', 'login', 'password', 'role']
-                user = s.scalars(select(User).where(User.id == choice)).first()
+                user = s.scalars(select(User).where(User.id == choice_id)).first()
                 # Prompting user to choose attribute to update
                 choice = _updatables[view.pick_in_attr(_updatables, user)]
                 if choice == 'firstName':
@@ -206,7 +208,49 @@ class Controller:
                 elif choice == 'role':
                     roles = s.scalars(select(Role)).all()
                     user.role_id = view.pick_in_list(roles)
+            if table == 'client':
+                client = s.scalars(select(Client).where(Client.id == choice_id)).first()
+                # Another permission check for the specific client instance
+                if PM.has_permission(client) == False:
+                    view.permission_denied()
+                    exit()
+                # Prompting user to choose attribute to update
+                _updatables = ['firstName', 'lastName', 'email', 'phone', 'company', 'commercialContact']
+                choice = _updatables[view.pick_in_attr(_updatables, client)]
+                if choice == 'firstName':
+                    client.firstName = view.get_str(choice)
+                elif choice == 'lastName':
+                    client.lasName = view.get_str(choice)
+                elif choice == 'email':
+                    client.email = view.get_str(choice)
+                elif choice == 'phone':
+                    client.login = view.get_str(choice)
+                elif choice == 'company':
+                    companies = s.scalars(select(Company)).all()
+                    client.company_id = view.pick_in_list(companies)
+                elif choice == 'commercialContact':
+                    role = s.scalars(select(Role).where(Role.name == 'Commercial')).first()
+                    request = select(User).where(User.role_id == role.id)
+                    commercials = s.scalars(request).all()
+                    client.user_id = view.pick_in_list(commercials)
+            if table == 'contract':
+                contract = s.scalars(select(Contract).where(Contract.id == choice_id)).first()
+                _updatables = ['description', 'totalAmount', 'remainingAmount', 'status', 'client']
+                choice = _updatables[view.pick_in_attr(_updatables, contract)]
+                if choice == 'description':
+                    contract.description = view.get_str(choice)
+                elif choice == 'totalAmount':
+                    contract.totalAmount = view.get_int(choice)
+                elif choice == 'remainingAmount':
+                    contract.remainingAmount = view.get_int(choice)
+                elif choice == 'status':
+                    statuses = s.scalars(select(Status)).all()
+                    contract.status_id = view.pick_in_list(statuses)
+                elif choice == 'client':
+                    clients = s.scalars(select(Client)).all()
+                    contract.client_id = view.pick_in_list(clients)
 
+        view.update_completed()
 
     def list(self, table=None, option=None):
         """

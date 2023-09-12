@@ -57,7 +57,7 @@ def create(table):
 @click.argument('table')
 def update(table):
     """
-    create client/contract/event
+    update client/contract/event
     """    
     check_table_name(table)
     c.update(table)

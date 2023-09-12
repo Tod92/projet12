@@ -24,7 +24,10 @@ class View:
     def get_password(self):
         self.password = click.prompt('Please enter password', type=str)
         return self.password 
-       
+
+    def update_completed(self):
+        click.echo('--- Update completed ! ---')
+
     def not_found(self, object_type=''):
         click.echo(f'{object_type} not found !')
 

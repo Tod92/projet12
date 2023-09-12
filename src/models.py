@@ -103,12 +103,16 @@ class Contract(Base):
     status = relationship('Status', back_populates='contracts')
 
     user_id = mapped_column(Integer, ForeignKey('user.id'), nullable=True)
-    commercialContact = relationship('User')
 
     client_id = mapped_column(Integer, ForeignKey('client.id'))
     client = relationship('Client', back_populates='contracts')
 
     event = relationship('Event', back_populates='contract')
+
+    @property
+    def commercialContact(self):
+        print("ouech")
+        return self.client.commercialContact
 
     def __repr__(self):
         return f"<Contract(client={self.client.fullName} company={self.client.company.name} amount={self.totalAmount} status={self.status.name})>"

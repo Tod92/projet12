@@ -87,10 +87,10 @@ CLIENT_POPULATION = [
 
 STATUS_POPULATION = [
     {
-        "name":"En cours"
+        "name":"Non Signé"
     },
     {
-        "name":"Terminé"
+        "name":"Signé"
     }
 ]
 
