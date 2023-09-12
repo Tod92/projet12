@@ -90,7 +90,7 @@ class Controller:
             exit()
         # Authentication process
         login = self.get_logged_user_or_ask_login()
-        # Initiatin session
+        # Initiating session
         with session_scope() as s:
             # Loading app user from database
             app_user = self.get_user(session=s, login=login)
@@ -99,6 +99,7 @@ class Controller:
             if PM.has_permission() == False:
                 view.permission_denied()
                 exit()
+            view.creation_starting(table)
             # Targeting class to perform object creation process        
             if table == 'user':
                 user = User()
@@ -107,7 +108,7 @@ class Controller:
                 user.role_id = view.pick_in_list(roles)
                 # Prompting user informations
                 user.firstName, user.lastName, user.login, user.email, user.password = view.get_info()
-                # Prompting and hashing password
+                # Hashing password
                 user.password = PH.hash(user.password)
                 # Creating entry
                 s.add(user)
@@ -148,6 +149,7 @@ class Controller:
                 event.startDate, event.endDate, event.attendees, event.notes = view.get_info()
                 # Creating entry
                 s.add(event)
+        view.creation_completed(table)
 
     def update(self, table=None, option=None):
         """
@@ -161,19 +163,19 @@ class Controller:
             if table == 'user':
                 _permission = 'isGestion'
                 view = UserView()
-                request = select(User)
+                request = select(User).order_by(User.id)
             elif table == 'client':
                 _permission = 'isAffectedTo'
                 view = ClientView()
-                request = select(Client).where(Client.user_id == app_user.id)   
+                request = select(Client).where(Client.user_id == app_user.id).order_by(Client.id)
             elif table == 'contract':
                 _permission = 'isCommercial'
                 view = ContractView()
-                request = select(Contract)
+                request = select(Contract).order_by(Contract.id)
             elif table == 'event':
                 _permission = 'isGestion'
                 view = EventView()
-                request = select(Event)
+                request = select(Event).order_by(Event.id)
             # If table not existing
             else:
                 view = View()
@@ -186,9 +188,6 @@ class Controller:
                 exit()
             # Permission passed. Executing request.
             instances = s.scalars(request).all()
-            if instances == []:
-                view.not_found(table)
-                exit()
             choice_id = view.pick_in_list(instances)
             if table == 'user':
                 _updatables = ['firstName', 'lastName', 'email', 'login', 'password', 'role']
@@ -220,18 +219,19 @@ class Controller:
                 if choice == 'firstName':
                     client.firstName = view.get_str(choice)
                 elif choice == 'lastName':
-                    client.lasName = view.get_str(choice)
+                    client.lastName = view.get_str(choice)
                 elif choice == 'email':
                     client.email = view.get_str(choice)
                 elif choice == 'phone':
-                    client.login = view.get_str(choice)
+                    client.phone = view.get_str(choice)
                 elif choice == 'company':
                     companies = s.scalars(select(Company)).all()
                     client.company_id = view.pick_in_list(companies)
                 elif choice == 'commercialContact':
+                    # Querying role table to get wanted role id
                     role = s.scalars(select(Role).where(Role.name == 'Commercial')).first()
-                    request = select(User).where(User.role_id == role.id)
-                    commercials = s.scalars(request).all()
+                    # Lisint only commercial users
+                    commercials = s.scalars(select(User).where(User.role_id == role.id)).all()
                     client.user_id = view.pick_in_list(commercials)
             if table == 'contract':
                 contract = s.scalars(select(Contract).where(Contract.id == choice_id)).first()
@@ -268,24 +268,28 @@ class Controller:
                 request = select(User)
                 if option == 'mine':
                     request = request.where(User.id == app_user.id)
+                request = request.order_by(User.id)
             elif table == 'client':
                 _permission = 'isAuth'
                 view = ClientView()
                 request = select(Client)
                 if option == 'mine':
                     request = request.where(Client.user_id == app_user.id)
+                request = request.order_by(Client.id)
             elif table == 'contract':
                 _permission = 'isAuth'
                 view = ContractView()
                 request = select(Contract)
                 if option == 'mine':
                     request = request.where(Contract.user_id == app_user.id)
+                request = request.order_by(Contract.id)
             elif table == 'event':
                 _permission = 'isAuth'
                 view = EventView()
                 request = select(Event)
                 if option == 'mine':
                     request = request.where(Event.user_id == app_user.id)
+                request = request.order_by(Event.id)
             # If table not existing
             else:
                 view = View()
@@ -298,11 +302,7 @@ class Controller:
                 exit()
             # Permission passed. Executing request.
             instances = s.scalars(request).all()
-            if instances:
-                for i in instances:
-                    view.list_item(i)
-            else:
-                view.not_found()
+            view.pick_in_list(instances, prompt=False)
 
 
 

@@ -18,27 +18,64 @@ class View:
         date = datetime.date(year=year, month=month, day=day)
         return date
     
-    def get_str(self, msg):
-        return click.prompt(f'please enter {msg} :', type=str)
+    def get_str(self, msg, max_length=200):
+        result = ''
+        first = True
+        while result == '' or len(result) > max_length:
+            if first == False:
+                click.echo(f'Please respect max length ({max_length})')
+            result = click.prompt(f'please enter {msg} :', type=str)
+            first = False
+        return result
+
+    def get_int(self, msg, max=None):
+        while True:
+            result = click.prompt(f'please enter {msg} :', type=int)
+            if max:
+                if result > max:
+                    click.echo('please respect maximum value ({max})')
+                    continue
+            return result
 
     def get_password(self):
         self.password = click.prompt('Please enter password', type=str)
         return self.password 
+    def creation_starting(self, table):
+         click.echo(f'---Starting {table} creation process ---')
 
+    def creation_completed(self, table):
+         click.echo(f'--- Creation of {table} completed ---')
+    
     def update_completed(self):
         click.echo('--- Update completed ! ---')
 
     def not_found(self, object_type=''):
         click.echo(f'{object_type} not found !')
 
+    def exiting(self):
+        click.echo('--- Exiting app ---')
+
     def unknown_object(self, description='this'):
         click.echo()
 
-    def pick_in_list(self, instances):
+    def pick_in_list(self, instances, prompt=True):
+        """
+        Asks to choose instance object list.
+        Exits if instances list empty.
+        Returns id.
+        prompt=False to simply show list  
+        """
+        if instances is None:
+            self.not_found()
+            self.exiting()
+            exit()
         tablename = instances[0].__tablename__
         for i in instances:
             self.list_item(i)
-        return click.prompt(f'Please pick a {tablename}', type=int)    
+        if prompt == False:
+            return None
+        else:
+            return click.prompt(f'Please pick a {tablename}', type=int)    
 
     def pick_in_attr(self, attr_list, instance):
         """
@@ -86,15 +123,16 @@ class AuthView(View):
         click.echo(f"You are logged in as {name}")
 
 class UserView(View):
+    
     def detail(self, user):
         click.echo(f'{user.id}:{user.fullName} login:{user.login} email:{user.email} role:{user.role.name}')
 
     def get_info(self):
-        firstName = click.prompt('Please enter first name', type=str)
-        lastName = click.prompt('Please enter last name', type=str)
-        login = click.prompt('Please enter login', type=str)
-        email = click.prompt('Please enter email', type=str)
-        password = click.prompt('Please enter password', type=str)
+        firstName = self.get_str('Please enter first name', max_length=50)
+        lastName = self.get_str('Please enter last name', max_length=50)
+        login = self.get_str('Please enter login', max_length=4)
+        email = self.get_str('Please enter email', max_length=50)
+        password = self.get_password()
         return firstName, lastName, login, email, password
         
 
@@ -104,10 +142,10 @@ class ClientView(View):
                    f'created:{client.creationDate} last update:{client.lastUpdateDate} commercial:{client.commercialContact}')
  
     def get_info(self):
-        firstName = click.prompt('Please enter first name', type=str)
-        lastName = click.prompt('Please enter last name', type=str)
-        email = click.prompt('Please enter email', type=str)
-        phone = click.prompt('Please enter phone', type=str)
+        firstName = self.get_str('Please enter first name', max_length=50)
+        lastName = self.get_str('Please enter last name', max_length=50)
+        email = self.get_str('Please enter email', max_length=50)
+        phone = self.get_int('Please enter phone', max=9999999999)
         return firstName, lastName, email, phone
 
 class ContractView(View):

@@ -30,6 +30,9 @@ class User(Base):
     def __repr__(self):
         return "<User({} login={} role={})>"\
                 .format(self.fullName, self.login, self.role.name)
+    @property
+    def user_id(self):
+        return self.id
     
     @property
     def fullName(self):
@@ -44,7 +47,7 @@ class Client(Base):
     firstName = mapped_column(String(50), nullable=False)
     lastName = mapped_column(String(50), nullable=False)
     email = mapped_column(String(50), nullable=False)
-    phone = mapped_column(String(50), nullable=False)
+    phone = mapped_column(Integer, nullable=False)
     creationDate = mapped_column(Date(), nullable=False, default=date.today())
     lastUpdateDate = mapped_column(Date(), nullable=False, default=date.today())
 

@@ -5,6 +5,7 @@ from config import DATABASE_URI
 from argon2 import PasswordHasher
 
 from sqlalchemy import create_engine, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import sessionmaker
 
 from src.models import Base, Location, User, Role, Company, Client, Status, Contract, Event
@@ -33,6 +34,10 @@ def session_scope():
     try:
         yield session
         session.commit()
+    except IntegrityError:
+        print("--- Error : IntegrityError --- Please verify informations and try again --- Rollback and closing app")
+        session.rollback()
+        exit()
     except Exception:
         session.rollback()
         raise
