@@ -1,6 +1,6 @@
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
-
+from sqlalchemy import select
 import sys
 sys.path.append("..") # Adds higher directory to python modules path.
 
@@ -9,7 +9,6 @@ from src.models import Location, User, Role, Company, Client, Status, Contract, 
 from src.views import View, LocationView, AuthView, ClientView, ContractView, EventView, UserView
 
 from src.auth import AuthManager
-from sqlalchemy import select
 
 
 PH = PasswordHasher()

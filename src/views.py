@@ -65,10 +65,11 @@ class View:
         Returns id.
         prompt=False to simply show list  
         """
-        if instances is None:
+        if len(instances) == 0:
             self.not_found()
             self.exiting()
             exit()
+        
         tablename = instances[0].__tablename__
         for i in instances:
             self.list_item(i)
