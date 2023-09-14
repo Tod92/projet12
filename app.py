@@ -1,11 +1,12 @@
 import click
-from src.crud import delete_database, recreate_database, populate_database
-from src.controller import Controller
+# from src.controller import Controller
+from src.controllers.dbcontroller import DbController
+from src.controllers.usercontroller import UserController
 
 __appname = "EPIC EVENTS"
 __tablenames = ['user', 'client', 'contract', 'event']
 
-c = Controller()
+# c = Controller()
 
 @click.group
 def cli():
@@ -13,25 +14,33 @@ def cli():
     pass
 
 @cli.command()
-def populatedb():
-    populate_database()
-    click.echo('Populated the database')
-
-@cli.command()
 def initdb():
-    recreate_database()
+    c = DbController()
+    c.init_tables()
     click.echo('Initialized the database')
 
 @cli.command()
-@click.option('-o',help="check")
-def login(o):
-    """
-    Prompt user for login credentials and authenticate to app.
-    -o check : Doesn't prompt. Just checks current token validity"""
-    if o == 'check':
-        c.verify_auth()
-    else:
-        c.auth_user()
+def populatedb():
+    c = DbController()
+    c.populate_database()
+    # click.echo('Populated the database')
+
+
+@cli.command()
+def login():
+    c = UserController()
+    c.login()
+
+# @cli.command()
+# @click.option('-o',help="check")
+# def login(o):
+#     """
+#     Prompt user for login credentials and authenticate to app.
+#     -o check : Doesn't prompt. Just checks current token validity"""
+#     if o == 'check':
+#         c.verify_auth()
+#     else:
+#         c.auth_user()
 
 @cli.command()
 @click.argument('table')

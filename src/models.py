@@ -67,6 +67,7 @@ class Client(Base):
         return self.firstName + ' ' + self.lastName
 
 
+
 class Event(Base):
     """
     Table event related to Location (many-to-one) and Contract (one-to-one)
@@ -124,7 +125,7 @@ class Contract(Base):
 
 class Status(Base):
     """
-    Table for contract's status related to CContract (many-to-one)
+    Table for contract's status related to Contract (many-to-one)
     """    
     __tablename__ = "status"
     id = mapped_column(Integer, primary_key=True)

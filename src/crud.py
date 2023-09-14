@@ -8,17 +8,7 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import sessionmaker
 
-from src.models import Base, Location, User, Role, Company, Client, Status, Contract, Event
-from src.population import (
-    USER_POPULATION,
-    ROLE_POPULATION,
-    LOCATION_POPULATION,
-    COMPANY_POPULATION,
-    CLIENT_POPULATION,
-    STATUS_POPULATION,
-    CONTRACT_POPULATION,
-    EVENT_POPULATION
-)
+from src.models import Base
 from contextlib import contextmanager
 
 
