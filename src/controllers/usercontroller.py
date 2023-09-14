@@ -1,30 +1,72 @@
+import json
+import jwt
+import datetime
+
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 from sqlalchemy import select
 import sys
 sys.path.append("..") # Adds higher directory to python modules path.
+from config import SECRET_KEY, TOKEN_FILE, TOKEN_LIFETIME_SECONDS
 
 from src.models.dbengine import session_scope
 from src.models.user import User
 from src.views.userview import UserView
 
-from src.auth import AuthManager
-
-
 PH = PasswordHasher()
 
 class UserController:
+    """
+    """
     _create_prompts = ['firstName', 'lastName', 'email', 'login', 'password', 'role']
     _update_prompts = ['firstName', 'lastName', 'email', 'login', 'password', 'role']
+    _json_key_name = 'token'
+    _token_key_name = 'login'
 
     def __init__(self):
         self.view = UserView()
+
+    @classmethod
+    def get_login_from_token(cls):
+        with open(TOKEN_FILE) as f:
+            token = json.load(f)[cls._json_key_name]
+            try:
+                result = jwt.decode(token, SECRET_KEY, algorithms="HS256")
+                return result[cls._token_key_name]
+            except jwt.ExpiredSignatureError:
+                return None
+
+    @classmethod
+    def gen_token(cls, user):
+        """
+        Creates a jwt token with wanted lifetime, with payload : {"login":"userlogin"}
+        saves it in local json file 
+        """
+        login = user.login
+        payload = {cls._token_key_name:login, 'exp':datetime.datetime.now(tz=datetime.timezone.utc)\
+                    + datetime.timedelta(seconds=TOKEN_LIFETIME_SECONDS)}
+        token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
+        file = open(TOKEN_FILE, 'w')
+        json.dump({cls._json_key_name:token}, file)
+        file.close()
+        return True
+    
+    def get_authenticated_user(self, session):
+        """
+        Check user credentials and ask for loggin if token expired or not found
+        Returns user instance
+        """
+        login = self.get_login_from_token()
+        while login == None:
+            login = self.login()
+        return User.get_from_login(session, login)
+    
 
     def login(self):
         with session_scope() as s:
             while True:    
                 login = self.view.get_login()
-                user = User.get_login(session=s, login=login)
+                user = User.get_from_login(session=s, login=login)
                 if user:
                     break
                 self.view.not_found()
@@ -34,52 +76,28 @@ class UserController:
                     PH.verify(user.password, password)
                     break
                 except VerifyMismatchError:
-                    view.bad_password()
-            success = AuthManager.gen_token(user)
+                    self.view.bad_password()
+            success = self.gen_token(user)
             self.view.success(success)
             return user.login
  
-class Controller:
-    """
-    Main app controller
-    """
-    def auth_user(self):
-        """
-        Asks user for login and password then gets him authenticated with jwt token in json file 
-        """
-        view = AuthView()
-        with session_scope() as s:
-            while True:    
-                login = view.get_login()
-                user = self.get_user(session=s, login=login)
-                if user:
-                    break
-                view.not_found()
-            while True:
-                password = view.get_password()
-                try:
-                    PH.verify(user.password, password)
-                    break
-                except VerifyMismatchError:
-                    view.bad_password()
-            success = AuthManager.gen_token(user)
-            view.success(success)
-            return user.login
-
     def verify_auth(self):
         """
         Verify validity of jwt token in json file.
         Returns user login
         """
-        view = AuthView()
-        login = AuthManager.auth()
+        login = AuthManager.check_token()
         if login:
-            view.valid_token(login)
+            self.view.valid_token(login)
             return login
         else:
-            view.invalid_token()
+            self.view.invalid_token()
 
-    def get_logged_user_or_ask_login(self):
+class Controller:
+    """
+    Main app controller
+    """
+    def get_authenticated_user(self):
         """
         Check user credentials and ask for loggin if token expired or not found
         Returns user instance

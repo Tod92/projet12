@@ -33,7 +33,7 @@ class User(Base, CRUDMixin):
         return self.firstName + ' ' + self.lastName
     
     @classmethod
-    def get_login(cls, session, login):
+    def get_from_login(cls, session, login):
         return session.scalars(select(cls).where(cls.login == login)).first()        
 
     def set_password(self, password):

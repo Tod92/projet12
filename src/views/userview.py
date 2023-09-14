@@ -2,9 +2,6 @@
 import click
 from src.views.view import View
 
-class AuthView(View):
-    """"""
-
 
 class UserView(View):
     

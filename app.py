@@ -2,6 +2,7 @@ import click
 # from src.controller import Controller
 from src.controllers.dbcontroller import DbController
 from src.controllers.usercontroller import UserController
+from src.controllers.clientcontroller import ClientController
 
 __appname = "EPIC EVENTS"
 __tablenames = ['user', 'client', 'contract', 'event']
@@ -27,20 +28,17 @@ def populatedb():
 
 
 @cli.command()
-def login():
+@click.option('-o',help="checkonly")
+def login(o):
+    """
+    Prompt user for login credentials and authenticate to app.
+    -o checkonly : Doesn't prompt. Just checks current token validity
+    """
     c = UserController()
-    c.login()
-
-# @cli.command()
-# @click.option('-o',help="check")
-# def login(o):
-#     """
-#     Prompt user for login credentials and authenticate to app.
-#     -o check : Doesn't prompt. Just checks current token validity"""
-#     if o == 'check':
-#         c.verify_auth()
-#     else:
-#         c.auth_user()
+    if o == 'checkonly':
+        c.verify_auth()
+    else:
+        c.login()
 
 @cli.command()
 @click.argument('table')
@@ -50,8 +48,8 @@ def list(table, o):
     list client/contract/event
     options : mine
     """
-    check_table_name(table)    
-    c.list(table,option=o)
+    c = get_table_controller(table)    
+    c.list(option=o)
 
 @cli.command()
 @click.argument('table')
@@ -72,10 +70,13 @@ def update(table):
     c.update(table)
 
 
-def check_table_name(table):
+def get_table_controller(table):
     if table not in __tablenames:
         click.echo(f'{table} is not a valid object type. Please try user, client, contract or event')
         exit()
-
+    elif table == 'user':
+        pass
+    elif table == 'client':
+        return ClientController()
 if __name__ == '__main__':
     cli()
