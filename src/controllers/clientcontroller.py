@@ -1,21 +1,21 @@
-from src.views.clientview import ClientView
-from src.controllers.usercontroller import UserController
 from src.models.dbengine import session_scope
+
+from src.views.clientview import ClientView
 from src.models.client import Client
+from src.controllers.permissions import PermissionsMixin
 
-
-class ClientController:
-    _list_permission = 'IsAuth'
-    _create_permission = 'IsCommercial'
+class ClientController(PermissionsMixin):
+    _list_permission = 'isAuth'
+    _create_permission = 'isCommercial'
     _update_permission = 'isAffectedTo'
 
     def __init__(self):
         self.view = ClientView()
 
     def list(self, option=None):
+        self._permission = self._list_permission
         with session_scope() as s:
-            user_controller = UserController()
-            app_user = user_controller.get_authenticated_user(s)
-            print(app_user)
+            self.has_permission(s)
             clients = Client.get_all(s)
-            print(len(clients))
+            print('nb results : ', len(clients))
+            self.view.list_instances(clients)

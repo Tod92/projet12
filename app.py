@@ -48,7 +48,7 @@ def list(table, o):
     list client/contract/event
     options : mine
     """
-    c = get_table_controller(table)    
+    c = get_table_controller(table)  
     c.list(option=o)
 
 @cli.command()
@@ -78,5 +78,6 @@ def get_table_controller(table):
         pass
     elif table == 'client':
         return ClientController()
+    
 if __name__ == '__main__':
     cli()

@@ -30,7 +30,7 @@ class Client(Base, CRUDMixin):
     contracts = relationship('Contract', back_populates='client')
 
     def __repr__(self):
-        return f"<Client({self.fullName} company={self.company.name} commercial={self.commercialContact.login})>"
+        return f"<Client({self.fullName} company={self.company.name} commercial={self.commercialContact})>"
 
     @property
     def fullName(self):

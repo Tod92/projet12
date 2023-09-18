@@ -66,7 +66,7 @@ class View:
             exit()      
         tablename = instances[0].__tablename__
         for i in instances:
-            self.list_item(i)
+            click.echo(f'{i.id} : {i}')
         if prompt == True:
             return click.prompt(f'Please pick a {tablename}', type=int)
         else:

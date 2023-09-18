@@ -1,4 +1,4 @@
+from src.views.view import View
 
-
-class ClientView:
+class ClientView(View):
     pass

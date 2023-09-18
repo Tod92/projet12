@@ -70,9 +70,9 @@ class View:
             self.exiting()
             exit()
         
-        tablename = instances[0].__tablename__
         for i in instances:
             self.list_item(i)
+        tablename = instances[0].__tablename__
         if prompt == False:
             return None
         else:
