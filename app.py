@@ -57,7 +57,7 @@ def create(table):
     """
     create client/contract/event
     """    
-    check_table_name(table)
+    c = get_table_controller(table)
     c.create(table)
 
 @cli.command()
@@ -66,7 +66,7 @@ def update(table):
     """
     update client/contract/event
     """    
-    check_table_name(table)
+    c = get_table_controller(table)
     c.update(table)
 
 

@@ -43,9 +43,17 @@ class CRUDMixin:
 
     @classmethod
     def get_all(cls, session):
-        return session.scalars(select(cls)).all()
+        return session.scalars(select(cls).order_by(cls.id)).all()
 
     @classmethod
     def get_mine(cls, session, user):
         return session.scalars(select(cls).where(cls.user_id == user.id)).all()
+  
+    @classmethod
+    def get_name(cls, session, name):
+        return session.scalars(select(cls).where(cls.name == name)).first()
+
+    @classmethod
+    def get_role_name(cls, session, role_name):
+        return session.scalars(select(cls).where(cls.role.name == role_name)).all()
 

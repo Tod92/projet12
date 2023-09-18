@@ -16,9 +16,7 @@ class PermissionsMixin:
             if self._user:
                 return True
         elif self._permission == 'isAffectedTo':
-            if instance is None:
-                return True
-            elif instance.user_id == self._user.id:
+            if self.instance.user_id == self._user.id:
                 return True
         elif self._permission == 'isGestion':
             if self._user.role.name == 'Gestion':
