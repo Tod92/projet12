@@ -45,11 +45,15 @@ class ClientController(PermissionsMixin):
             s.add(client)
 
     def update(self, option=None):
-        self._permission = self._update_permission
         with session_scope() as s:
+            # First permission check for list
+            self._permission = self._list_permission
+            self.has_permission(s)
             clients = Client.get_all(s)
             choice = self.view.list_instances(clients, prompt=True)
             self.instance = clients[choice-1]
+            # Second permission check for update
+            self._permission = self._update_permission
             self.has_permission(s)
             choice = self._updatables[self.view.pick_in_attr(self._updatables, self.instance)]
             if choice == 'firstName':
@@ -64,6 +68,7 @@ class ClientController(PermissionsMixin):
                 companies = Company.get_all(s)
                 self.instance.company_id = self.view.list_instances(companies, prompt=True)
             elif choice == 'commercialContact':
+                pass
                 # Listing only commercial users
                 # commercials = User.get_role_name(s, 'Commercial')
 
