@@ -15,7 +15,7 @@ class User(Base, CRUDMixin):
     # Login as 'flas' : 'jbon' for Bond, 'jbou' for Bourne
     login = mapped_column(String(4),nullable=False, unique=True)
     email = mapped_column(String(50), nullable=False, unique=True)
-    password = mapped_column(String(200), nullable=False)
+    password = mapped_column(String(15), nullable=False)
     role_id = mapped_column(Integer, ForeignKey('role.id'))
     role = relationship('Role', back_populates='users')
     clients = relationship('Client', back_populates='commercialContact')
@@ -35,6 +35,7 @@ class User(Base, CRUDMixin):
     @classmethod
     def get_from_login(cls, session, login):
         return session.scalars(select(cls).where(cls.login == login)).first()        
+
 
     def set_password(self, password):
         self.password = PH.hash(password)

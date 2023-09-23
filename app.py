@@ -1,6 +1,7 @@
 import click
 # from src.controller import Controller
 from src.controllers.dbcontroller import DbController
+from src.controllers.authcontroller import AuthController
 from src.controllers.usercontroller import UserController
 from src.controllers.clientcontroller import ClientController
 
@@ -34,7 +35,7 @@ def login(o):
     Prompt user for login credentials and authenticate to app.
     -o checkonly : Doesn't prompt. Just checks current token validity
     """
-    c = UserController()
+    c = AuthController()
     if o == 'checkonly':
         c.verify_auth()
     else:
@@ -75,7 +76,7 @@ def get_table_controller(table):
         click.echo(f'{table} is not a valid object type. Please try user, client, contract or event')
         exit()
     elif table == 'user':
-        pass
+        return UserController()
     elif table == 'client':
         return ClientController()
     

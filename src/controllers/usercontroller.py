@@ -2,26 +2,29 @@ import json
 import jwt
 import datetime
 
-from argon2 import PasswordHasher
-from argon2.exceptions import VerifyMismatchError
 from sqlalchemy import select
 import sys
 sys.path.append("..") # Adds higher directory to python modules path.
 from config import SECRET_KEY, TOKEN_FILE, TOKEN_LIFETIME_SECONDS
 
 from src.models.dbengine import session_scope
+from src.controllers.permissions import PermissionsMixin
 from src.models.user import User
 from src.views.userview import UserView
+from src.models.role import Role
 
-PH = PasswordHasher()
 
-class UserController:
+
+class UserController(PermissionsMixin):
     """
     """
-    _create_prompts = ['firstName', 'lastName', 'email', 'login', 'password', 'role']
-    _update_prompts = ['firstName', 'lastName', 'email', 'login', 'password', 'role']
-    _json_key_name = 'token'
-    _token_key_name = 'login'
+    _table_name = 'user'
+
+    _list_permission = 'isAuth'
+    _create_permission = 'isGestion'
+    _update_permission = 'isGestion'
+    # _create_prompts = ['firstName', 'lastName', 'email', 'login', 'password', 'role']
+    # _update_prompts = ['firstName', 'lastName', 'email', 'login', 'password', 'role']
 
     def __init__(self):
         self.view = UserView()
@@ -92,6 +95,61 @@ class UserController:
             return login
         else:
             self.view.invalid_token()
+
+    def list(self, option=None):
+        self._permission = self._list_permission
+        with session_scope() as s:
+            self.has_permission(s)
+            users = User.get_all(s)
+            self.view.list_instances(users)
+
+    def create(self, option=None):
+        self._permission = self._create_permission
+        with session_scope() as s:
+            self.has_permission(s)
+            self.view.creation_starting(self._table_name)
+            user = User()
+            # Prompting role for user
+            roles = Role.get_all(s)
+            user.role_id = self.view.list_instances(roles, prompt=True)
+            # Prompting user informations
+            user.firstName = self.view.get_str('First Name', max_length=50)
+            user.lastName = self.view.get_str('Last Name', max_length=50) 
+            user.login = self.view.get_str('Login', max_length=4)
+            user.email  = self.view.get_str('Email', max_length=50)
+            user.set_password(self.view.get_str('Password', max_length=15))
+            # Creating entry
+            s.add(user)
+
+    def update(self, option=None):
+        with session_scope() as s:
+            # First permission check for list
+            self._permission = self._list_permission
+            self.has_permission(s)
+            clients = Client.get_all(s)
+            choice = self.view.list_instances(clients, prompt=True)
+            self.instance = clients[choice-1]
+            # Second permission check for update
+            self._permission = self._update_permission
+            self.has_permission(s)
+            choice = self._updatables[self.view.pick_in_attr(self._updatables, self.instance)]
+            if choice == 'firstName':
+                self.instance.firstName = self.view.get_str('First Name', max_length=50)
+            elif choice == 'lastName':
+                self.instance.lastName = self.view.get_str('Last Name', max_length=50)
+            elif choice == 'email':
+                self.instance.email = self.view.get_str('Email', max_length=50)
+            elif choice == 'phone':
+                self.instance.phone = self.view.get_int('Phone')
+            elif choice == 'company':
+                companies = Company.get_all(s)
+                self.instance.company_id = self.view.list_instances(companies, prompt=True)
+            elif choice == 'commercialContact':
+                # Listing only commercial users
+                role = Role.get_name(s, 'Commercial')
+                commercials = role.users
+                self.instance.user_id = self.view.list_instances(commercials, prompt=True)
+
 
 class Controller:
     """

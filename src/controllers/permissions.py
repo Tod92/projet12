@@ -1,4 +1,4 @@
-from src.controllers.usercontroller import UserController
+from src.controllers.authcontroller import AuthController
 
 
 
@@ -8,8 +8,8 @@ class PermissionsMixin:
     """
 
     def has_permission(self, session):
-        user_controller = UserController()
-        self._user = user_controller.get_authenticated_user(session)
+        auth_controller = AuthController()
+        self._user = auth_controller.get_authenticated_user(session)
         if self._user.role.name == 'Admin':
             return True
         if self._permission == 'isAuth':
@@ -29,3 +29,4 @@ class PermissionsMixin:
                 return True
         self.view.permission_denied()
         exit()
+

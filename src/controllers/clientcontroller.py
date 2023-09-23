@@ -3,7 +3,7 @@ from src.models.dbengine import session_scope
 from src.views.clientview import ClientView
 from src.models.client import Client
 from src.models.company import Company
-
+from src.models.role import Role
 
 from src.controllers.permissions import PermissionsMixin
 
@@ -22,7 +22,6 @@ class ClientController(PermissionsMixin):
         with session_scope() as s:
             self.has_permission(s)
             clients = Client.get_all(s)
-            print('nb results : ', len(clients))
             self.view.list_instances(clients)
 
     def create(self, option=None):
@@ -68,7 +67,7 @@ class ClientController(PermissionsMixin):
                 companies = Company.get_all(s)
                 self.instance.company_id = self.view.list_instances(companies, prompt=True)
             elif choice == 'commercialContact':
-                pass
                 # Listing only commercial users
-                # commercials = User.get_role_name(s, 'Commercial')
-
+                role = Role.get_name(s, 'Commercial')
+                commercials = role.users
+                self.instance.user_id = self.view.list_instances(commercials, prompt=True)
