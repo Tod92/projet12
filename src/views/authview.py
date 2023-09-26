@@ -15,3 +15,6 @@ class AuthView(View):
             click.echo("Authentication OK !")
         else:
             click.echo("SOMETHING WENT WRONG !!")
+
+    def bad_password(self):
+        click.echo("INCORRECT PASSWORD !!")

@@ -19,8 +19,6 @@ class UserView(View):
  
         
  
-    def bad_password(self):
-        click.echo("INCORRECT PASSWORD !!")
     
 
     def valid_token(self, login):

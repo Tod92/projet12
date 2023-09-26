@@ -4,6 +4,8 @@ from src.controllers.dbcontroller import DbController
 from src.controllers.authcontroller import AuthController
 from src.controllers.usercontroller import UserController
 from src.controllers.clientcontroller import ClientController
+from src.controllers.contractcontroller import ContractController
+from src.controllers.eventcontroller import EventController
 
 __appname = "EPIC EVENTS"
 __tablenames = ['user', 'client', 'contract', 'event']
@@ -79,6 +81,10 @@ def get_table_controller(table):
         return UserController()
     elif table == 'client':
         return ClientController()
+    elif table == 'contract':
+        return ContractController()
+    elif table == 'event':
+        return EventController()
     
 if __name__ == '__main__':
     cli()

@@ -15,7 +15,7 @@ class User(Base, CRUDMixin):
     # Login as 'flas' : 'jbon' for Bond, 'jbou' for Bourne
     login = mapped_column(String(4),nullable=False, unique=True)
     email = mapped_column(String(50), nullable=False, unique=True)
-    password = mapped_column(String(15), nullable=False)
+    password = mapped_column(String(150), nullable=False)
     role_id = mapped_column(Integer, ForeignKey('role.id'))
     role = relationship('Role', back_populates='users')
     clients = relationship('Client', back_populates='commercialContact')

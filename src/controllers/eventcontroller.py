@@ -1,56 +1,59 @@
 from src.models.dbengine import session_scope
 
-from src.views.clientview import ClientView
-from src.models.client import Client
-from src.models.company import Company
-from src.models.role import Role
-
+from src.views.eventview import EventView
+from src.models.event import Event
+from src.models.contract import Contract
+from src.models.location import Location
 from src.controllers.permissions import PermissionsMixin
 
-class ClientController(PermissionsMixin):
-    _table_name = 'client'
+class EventController(PermissionsMixin):
+    _table_name = 'event'
     _list_permissions = ['isAuth']
     _create_permissions = ['isCommercial']
     _update_permissions = ['isAffectedTo']
-    _updatables = ['firstName', 'lastName', 'email', 'phone', 'company', 'commercialContact']
+    _updatables = ['name', 'startDate', 'endDate', 'attendees', 'notes']
 
     def __init__(self):
-        self.view = ClientView()
+        self.view = EventView()
 
     def list(self, option=None):
         self._permissions = self._list_permissions
         with session_scope() as s:
             self.has_permission(s)
-            clients = Client.get_all(s)
-            self.view.list_instances(clients)
+            events = Event.get_all(s)
+            self.view.list_instances(events)
 
     def create(self, option=None):
         self._permissions = self._create_permissions
         with session_scope() as s:
             self.has_permission(s)
             self.view.creation_starting(self._table_name)
-            client = Client()
-            # Prompting company for client
-            companies = Company.get_all(s)
-            client.company_id = self.view.list_instances(companies, prompt=True)
-            # Prompting client informations
-            client.firstName = self.view.get_str('First Name', max_length=50)
-            client.lastName = self.view.get_str('Last Name', max_length=50) 
-            client.email  = self.view.get_str('Email', max_length=50)
-            client.phone = self.view.get_int('Phone')
-            # Affecting app user to new client
-            client.user_id = self._user.id
+            event = Event()
+            # Prompting contract for event
+            contracts = Contract.get_mine(s, self._user)
+            event.contract_id = self.view.list_instances(contracts, prompt=True)
+            # Prompting location for event
+            locations = Location.get_all(s)
+            event.location_id = self.view.list_instances(locations, prompt=True)
+            # Prompting event informations
+            event.name = self.view.get_str('name', max_length=100)
+            event.startDate = self.view.get_date('Please enter start date')
+            event.endDate = self.view.get_date('Please enter end date')
+            event.attendees = self.view.get_int('number of attendees')
+            event.notes = self.view.get_str('notes', max_length=500)
+            # Affecting app user to new event
+            event.user_id = self._user.id
             # Creating entry
-            s.add(client)
+            s.add(event)
 
     def update(self, option=None):
         with session_scope() as s:
             # First permission check for list
             self._permissions = self._list_permissions
             self.has_permission(s)
-            clients = Client.get_all(s)
-            choice = self.view.list_instances(clients, prompt=True)
-            self.instance = clients[choice-1]
+            events = Event.get_all(s)
+            choice = self.view.list_instances(events, prompt=True)
+            self.instance = events[choice-1]
             # Second permission check for update
             self._permissions = self._update_permissions
             self.has_permission(s)

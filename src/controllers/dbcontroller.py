@@ -58,6 +58,7 @@ class DbController:
                 client.email = c['email']
                 client.phone = c['phone']         
                 client.company_id = c['company_id']
+                client.user_id = c['user_id']
                 s.add(client)
             for st in populations['status']:
                 status = Status()

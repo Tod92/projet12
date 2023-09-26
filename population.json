@@ -68,21 +68,26 @@
             "lastName":"Chu",
             "email":"pika.chu@gmail.com",
             "phone":"0100000000",
-            "company_id":1
+            "company_id":1,
+            "user_id":3
         },
         {
             "firstName":"Bulbi",
             "lastName":"Zare",
             "email":"bulbi.zare@gmail.com",
             "phone":"01111111",
-            "company_id":1
+            "company_id":1,
+            "user_id":3
+
         },
         {
             "firstName":"Iron",
             "lastName":"Man",
             "email":"iron.man@gmail.com",
             "phone":"0123456789",
-            "company_id":2
+            "company_id":2,
+            "user_id":3
+            
         }
     ],
     "status":
