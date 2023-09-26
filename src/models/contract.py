@@ -29,11 +29,17 @@ class Contract(Base, CRUDMixin):
     event = relationship('Event', back_populates='contract')
 
     @property
+    def has_event(self):
+        if self.event == []:
+            return False
+        else:
+            return True
+        
+    @property
     def commercialContact(self):
-        print("ouech")
         return self.client.commercialContact
 
     def __repr__(self):
-        return f"<Contract(client={self.client.fullName} company={self.client.company.name} amount={self.totalAmount} status={self.status.name})>"
+        return f"<Contract(client={self.client.fullName} company={self.client.company.name} amount={self.totalAmount} status={self.status.name} event={self.has_event} commercial={self.commercialContact.fullName})>"
 
 

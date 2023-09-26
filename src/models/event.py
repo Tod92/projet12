@@ -25,7 +25,12 @@ class Event(Base, CRUDMixin):
     contract_id = mapped_column(Integer, ForeignKey('contract.id'))
     contract = relationship('Contract', back_populates='event')
 
-    supportContact_id = mapped_column(Integer, ForeignKey('user.id'))
+    user_id = mapped_column(Integer, ForeignKey('user.id'))
+    supportContact = relationship('User')
+
+    @property
+    def commercialContact(self):
+        return self.contract.commercialContact
 
     def __repr__(self):
-        return f"<Event({self.name} start={self.startDate} attendees={self.attendees} location={self.location.address} contract no={self.contract.id})>"
+        return f"<Event({self.name} start={self.startDate} attendees={self.attendees} location={self.location.address} contract no={self.contract.id} commercialContact={self.commercialContact})>"

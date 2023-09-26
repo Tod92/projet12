@@ -99,22 +99,19 @@ CONTRACT_POPULATION = [
         "description":"Contract de maintenance éléctrique avec le client PIKA CHU (POKEMON INC)",
         "totalAmount":1560,
         "remainingAmount":1560,
-        "client_id":1,
-        "user_id":3
+        "client_id":1
     },
     {
         "description":"Contract bancaire avec Tony Stark",
         "totalAmount":999999,
         "remainingAmount":999999,
-        "client_id":3,
-        "user_id":3
+        "client_id":3
     },
     {
         "description":"Contrat pour un stand Avengers à la Comic Con",
         "totalAmount":12,
         "remainingAmount":16,
-        "client_id":3,
-        "user_id":3
+        "client_id":3
     }
 ]
 

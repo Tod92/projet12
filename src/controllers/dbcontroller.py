@@ -71,6 +71,7 @@ class DbController:
                 contract.remainingAmount = c['remainingAmount']
                 contract.client_id = c['client_id']
                 contract.user_id = c['user_id']
+                contract.status_id = c['status_id']
                 s.add(contract)
             for e in populations['event']:
                 event = Event()

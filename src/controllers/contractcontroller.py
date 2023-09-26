@@ -10,8 +10,8 @@ from src.controllers.permissions import PermissionsMixin
 class ContractController(PermissionsMixin):
     _table_name = 'contract'
     _list_permissions = ['isAuth']
-    _create_permissions = ['isCommercial']
-    _update_permissions = ['isAffectedTo']
+    _create_permissions = ['isGestion']
+    _update_permissions = ['isAffectedToClient', 'isGestion']
     _updatables = ['description', 'totalAmount', 'remainingAmount', 'status', 'client']
 
     def __init__(self):
@@ -31,7 +31,7 @@ class ContractController(PermissionsMixin):
             self.view.creation_starting(self._table_name)
             contract = Contract()
             # Prompting client for contract
-            clients = Client.get_mine(s, self._user)
+            clients = Client.get_all(s)
             contract.client_id = self.view.list_instances(clients, prompt=True)
             # Prompting contract informations
             contract.description = self.view.get_str('Description', max_length=500)
@@ -61,7 +61,7 @@ class ContractController(PermissionsMixin):
             elif choice == 'remainingAmount':
                 self.instance.remainingAmount = self.view.get_int('Remaining amount')
             elif choice == 'client':
-                clients = Client.get_mine(s)
+                clients = Client.get_all(s)
                 self.instance.client_id = self.view.list_instances(clients, prompt=True)
             elif choice == 'status':
                 statuses = Status.get_all(s)

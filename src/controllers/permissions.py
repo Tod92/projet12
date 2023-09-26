@@ -4,7 +4,8 @@ from src.controllers.authcontroller import AuthController
 
 class PermissionsMixin:
     """
-    Controls app user acess permission
+    Controls app user access permission
+    App user needs to validate one of the permissions in list to access
     """
 
     def has_permission(self, session):
@@ -16,9 +17,6 @@ class PermissionsMixin:
             if p == 'isAuth':
                 if self._user:
                     return True
-            elif p == 'isAffectedTo':
-                if self.instance.user_id == self._user.id:
-                    return True
             elif p == 'isGestion':
                 if self._user.role.name == 'Gestion':
                     return True
@@ -27,6 +25,12 @@ class PermissionsMixin:
                     return True
             elif p == 'isSupport':
                 if self._user.role.name == 'Support':
+                    return True
+            elif p == 'isAffectedTo':
+                if self.instance.user_id == self._user.id:
+                    return True
+            elif p == 'isAffectedToClient':
+                if self.instance.commercialContact.id == self._user.id:
                     return True
         self.view.permission_denied()
         exit()
