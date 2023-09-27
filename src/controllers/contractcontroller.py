@@ -22,6 +22,10 @@ class ContractController(PermissionsMixin):
         with session_scope() as s:
             self.has_permission(s)
             contracts = Contract.get_all(s)
+            if option == 'topay':
+                contracts = list(filter(lambda x: x.isnt_paid(), contracts))
+            elif option == 'tosign':
+                contracts = list(filter(lambda x: x.status.id == 1, contracts))
             self.view.list_instances(contracts)
 
     def create(self, option=None):

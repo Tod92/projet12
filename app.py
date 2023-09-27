@@ -1,5 +1,4 @@
 import click
-# from src.controller import Controller
 from src.controllers.dbcontroller import DbController
 from src.controllers.authcontroller import AuthController
 from src.controllers.usercontroller import UserController
@@ -10,7 +9,6 @@ from src.controllers.eventcontroller import EventController
 __appname = "EPIC EVENTS"
 __tablenames = ['user', 'client', 'contract', 'event']
 
-# c = Controller()
 
 @click.group
 def cli():
@@ -31,25 +29,25 @@ def populatedb():
 
 
 @cli.command()
-@click.option('-o',help="checkonly")
+@click.option('-o',help="check")
 def login(o):
     """
     Prompt user for login credentials and authenticate to app.
     -o checkonly : Doesn't prompt. Just checks current token validity
     """
     c = AuthController()
-    if o == 'checkonly':
+    if o == 'check':
         c.verify_auth()
     else:
         c.login()
 
 @cli.command()
 @click.argument('table')
-@click.option('-o',help="mine")
+@click.option('-o',help="mine / nosupport")
 def list(table, o):
     """
     list client/contract/event
-    options : mine
+    options : mine nosupport(event) tosign(contract) topay(contract)
     """
     c = get_table_controller(table)  
     c.list(option=o)

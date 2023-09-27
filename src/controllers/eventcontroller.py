@@ -21,7 +21,12 @@ class EventController(PermissionsMixin):
         self._permissions = self._list_permissions
         with session_scope() as s:
             self.has_permission(s)
-            events = Event.get_all(s)
+            if option == 'mine':
+                events = Event.get_mine(s, self._user)
+            else:    
+                events = Event.get_all(s)
+            if option == 'nosupport':
+                events = list(filter(lambda x: x.user_id == None, events))
             self.view.list_instances(events)
 
     def create(self, option=None):
@@ -50,8 +55,6 @@ class EventController(PermissionsMixin):
             event.endDate = self.view.get_date('Please enter end date')
             event.attendees = self.view.get_int('number of attendees')
             event.notes = self.view.get_str('notes', max_length=500)
-            # Affecting app user to new event
-            event.user_id = self._user.id
             # Creating entry
             s.add(event)
 
@@ -64,11 +67,7 @@ class EventController(PermissionsMixin):
             # First permission check for list
             self._permissions = self._list_permissions
             self.has_permission(s)
-            if self._user.role.name == 'Gestion':
-                events = Event.get_all(s)
-                # Gestion user can affect support user to event
-                self._updatables.append('user_id')
-            elif self._user.role.name == 'Commercial':
+            if self._user.role.name == 'Commercial':
                 clients = Client.get_mine(s, self._user)
                 contracts = []
                 for cl in clients:
@@ -79,6 +78,13 @@ class EventController(PermissionsMixin):
                     if co.event:
                         print(co.event)
                         events.append(co.event[0])
+            elif self._user.role.name == 'Gestion':
+                events = Event.get_all(s)
+                # Gestion user can affect support user to event
+                self._updatables.append('user_id')
+            else:
+                events = Event.get_all(s)
+
             choice = self.view.list_instances(events, prompt=True)
             self.instance = events[choice-1]
             # Second permission check for update

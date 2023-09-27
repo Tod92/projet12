@@ -42,4 +42,8 @@ class Contract(Base, CRUDMixin):
     def __repr__(self):
         return f"<Contract(client={self.client.fullName} company={self.client.company.name} amount={self.totalAmount} status={self.status.name} event={self.has_event} commercial={self.commercialContact.fullName})>"
 
-
+    def isnt_paid(self):
+        if self.remainingAmount == 0:
+           return True
+        else:
+            return False

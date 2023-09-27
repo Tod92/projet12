@@ -18,3 +18,7 @@ class AuthView(View):
 
     def bad_password(self):
         click.echo("INCORRECT PASSWORD !!")
+
+    def invalid_token(self):
+        click.echo(f"Token invalid or not present !")
+

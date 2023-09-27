@@ -83,7 +83,7 @@ class AuthController:
         Verify validity of jwt token in json file.
         Returns user login
         """
-        login = AuthManager.check_token()
+        login = self.get_login_from_token()
         if login:
             self.view.valid_token(login)
             return login
