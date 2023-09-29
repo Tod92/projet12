@@ -1,4 +1,6 @@
 import click
+import sentry_sdk
+
 from src.controllers.dbcontroller import DbController
 from src.controllers.authcontroller import AuthController
 from src.controllers.usercontroller import UserController
@@ -8,6 +10,7 @@ from src.controllers.eventcontroller import EventController
 
 __appname = "EPIC EVENTS"
 __tablenames = ['user', 'client', 'contract', 'event']
+
 
 
 @click.group

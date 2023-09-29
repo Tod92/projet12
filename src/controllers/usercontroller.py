@@ -1,12 +1,3 @@
-import json
-import jwt
-import datetime
-
-from sqlalchemy import select
-import sys
-sys.path.append("..") # Adds higher directory to python modules path.
-from config import SECRET_KEY, TOKEN_FILE, TOKEN_LIFETIME_SECONDS
-
 from src.models.dbengine import session_scope
 from src.controllers.permissions import PermissionsMixin
 from src.models.user import User
@@ -16,8 +7,7 @@ from src.models.role import Role
 
 
 class UserController(PermissionsMixin):
-    """
-    """
+    
     _table_name = 'user'
 
     _list_permissions = ['isAuth']
@@ -27,37 +17,6 @@ class UserController(PermissionsMixin):
 
     def __init__(self):
         self.view = UserView()    
-
-    def login(self):
-        with session_scope() as s:
-            while True:    
-                login = self.view.get_login()
-                user = User.get_from_login(session=s, login=login)
-                if user:
-                    break
-                self.view.not_found()
-            while True:
-                password = self.view.get_password()
-                try:
-                    PH.verify(user.password, password)
-                    break
-                except VerifyMismatchError:
-                    self.view.bad_password()
-            success = self.gen_token(user)
-            self.view.success(success)
-            return user.login
- 
-    def verify_auth(self):
-        """
-        Verify validity of jwt token in json file.
-        Returns user login
-        """
-        login = AuthManager.check_token()
-        if login:
-            self.view.valid_token(login)
-            return login
-        else:
-            self.view.invalid_token()
 
     def list(self, option=None):
         self._permissions = self._list_permissions

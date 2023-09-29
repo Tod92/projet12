@@ -76,7 +76,6 @@ class EventController(PermissionsMixin):
                 events = []
                 for co in contracts:
                     if co.event:
-                        print(co.event)
                         events.append(co.event[0])
             elif self._user.role.name == 'Gestion':
                 events = Event.get_all(s)
