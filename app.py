@@ -1,6 +1,4 @@
 import click
-import sentry_sdk
-
 from src.controllers.dbcontroller import DbController
 from src.controllers.authcontroller import AuthController
 from src.controllers.usercontroller import UserController

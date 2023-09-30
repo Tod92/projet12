@@ -6,7 +6,6 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy.exc import IntegrityError
 
-
 from contextlib import contextmanager
 
 
@@ -21,11 +20,7 @@ def session_scope():
     session = Session()
     try:
         yield session
-        session.commit()
-    # except IntegrityError:
-    #     print("--- Error : IntegrityError --- Please verify informations and try again --- Rollback and closing app")
-    #     session.rollback()
-    #     exit()
+        session.commit()            
     except Exception:
         session.rollback()
         raise

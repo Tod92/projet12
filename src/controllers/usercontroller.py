@@ -3,7 +3,7 @@ from src.controllers.permissions import PermissionsMixin
 from src.models.user import User
 from src.views.userview import UserView
 from src.models.role import Role
-
+import logging
 
 
 class UserController(PermissionsMixin):
@@ -42,6 +42,9 @@ class UserController(PermissionsMixin):
             user.set_password(self.view.get_str('Password', max_length=15))
             # Creating entry
             s.add(user)
+            # Logging user creation (commit needed before log)
+            s.commit()
+            logging.info(f'User Created : {user}')
 
     def update(self, option=None):
         with session_scope() as s:
@@ -68,6 +71,10 @@ class UserController(PermissionsMixin):
                 self.instance.role_id = self.view.list_instances(roles, prompt=True)
             elif choice == 'password':
                 self.instance.set_password(self.view.get_str('Password', max_length=15))
+            # Logging user update (commit needed before log)
+            s.commit()
+            logging.info(f'User {choice} Updated : {self.instance}')
+           
 
 
 

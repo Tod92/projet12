@@ -7,6 +7,9 @@ from src.models.status import Status
 
 from src.controllers.permissions import PermissionsMixin
 
+import logging
+
+
 class ContractController(PermissionsMixin):
     _table_name = 'contract'
     _list_permissions = ['isAuth']
@@ -70,3 +73,6 @@ class ContractController(PermissionsMixin):
             elif choice == 'status':
                 statuses = Status.get_all(s)
                 self.instance.status_id = self.view.list_instances(statuses, prompt=True)
+                # Logging status update (commit needed before log)
+                s.commit()
+                logging.info(f'Status Updated for contract : {self.instance}')
