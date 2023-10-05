@@ -11,7 +11,7 @@ class EventController(PermissionsMixin):
     _table_name = 'event'
     _list_permissions = ['isAuth']
     _create_permissions = ['isCommercial']
-    _update_permissions = ['isAffectedToClient', 'isGestion']
+    _update_permissions = ['isAffectedTo', 'isGestion']
     _updatables = ['name', 'startDate', 'endDate', 'attendees', 'notes']
 
     def __init__(self):
