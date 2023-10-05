@@ -4,7 +4,6 @@ from config import DATABASE_URI
 
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import declarative_base, sessionmaker
-from sqlalchemy.exc import IntegrityError
 
 from contextlib import contextmanager
 

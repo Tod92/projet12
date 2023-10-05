@@ -44,6 +44,6 @@ class Contract(Base, CRUDMixin):
 
     def isnt_paid(self):
         if self.remainingAmount == 0:
-           return True
-        else:
             return False
+        else:
+            return True
